@@ -28,6 +28,7 @@ private:
 	void construct(void);
 	void destruct(void);
 	void out_degree_random(void);
+	void out_degree_random(int edges);
 	void out_degree_scale_free(double lambda);
 	void out_degree_uniform(int degree);
 	void set_out_degree(int i, int degree);

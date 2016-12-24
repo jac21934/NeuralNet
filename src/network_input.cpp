@@ -35,8 +35,9 @@ void network::check_input(ifstream &inFile) {
 			neurons = atoi(input.substr(10).c_str());
 		} else if (input.substr(1, 10) == "MAX_TURNS:") {
 			max_turns = atoi(input.substr(11).c_str());
-		} else if (input.substr(1, 9) == "RANDOMIZE") {
-			out_degree_random();
+		} else if (input.substr(1, 10) == "RANDOMIZE:") {
+			int edges = atoi(input.substr(11).c_str());
+			out_degree_random(edges);
 		} else if (input.substr(1, 7) == "LAMBDA:") {
 			double lambda = atof(input.substr(8).c_str());
 			out_degree_scale_free(lambda);

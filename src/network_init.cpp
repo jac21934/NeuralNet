@@ -56,6 +56,7 @@ void network::destruct(void) {
 	}
 }
 
+// probably shouldn't use this one
 void network::out_degree_random(void) {
 	construct();
 
@@ -63,6 +64,21 @@ void network::out_degree_random(void) {
 		set_out_degree(i, rand.random_int() % neurons);
 	}
 	normalize_and_recount();
+}
+
+void network::out_degree_random(int edges) {
+	construct();
+
+	int remaining = edges;
+	while (remaining > 0) {
+		int i = rand.random_int() % neurons;
+		int j = rand.random_int() % neurons;
+		if (i != j && abs(weight[i][j]) > MIN_RES) {
+			weight[i][j] = rand.random_interval(-1, 1);
+			if (abs(weight[i][j]) > MIN_RES)
+				remaining--;
+		}
+	}
 }
 
 void network::out_degree_scale_free(double lambda) {
