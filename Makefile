@@ -6,7 +6,7 @@ CXX			= g++
 RM			= rm -f
 
 CPPFLAGS	= -MD -Wall -Werror -std=c++11
-CXXFLAGS	= -g -O3
+CXXFLAGS	= -O3
 LDFLAGS		=
 LDLIBS		=
 
@@ -18,12 +18,16 @@ DEPS = $(OBJS:.o=.d)
 
 all: $(TARGET)
 
+debug: CPPFLAGS += -DDEBUG
+debug: CXXFLAGS += -g
+debug: $(TARGET)
+
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 clean:
 	$(RM) $(TARGET) $(OBJS) $(DEPS)
 
-.PHONY: all clean
+.PHONY: all clean debug
 
 -include $(DEPS)

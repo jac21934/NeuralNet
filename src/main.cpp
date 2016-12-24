@@ -14,7 +14,11 @@ int main() {
 		return -1;
 	}
 
+#ifdef DEBUG
 	net.run(true);
+#else
+	net.run(false);
+#endif
 
 	return 0;
 }
