@@ -105,6 +105,7 @@ void network::run(bool verbose) {
 			}
 
 			normalize_and_recount();
+			if (verbose) { cerr << "Bonds: " << bond_number << endl; }
 		
 			// Up/down state transition
 			if (depol_sum > transition) {
