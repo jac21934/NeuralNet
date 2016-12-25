@@ -73,7 +73,7 @@ void network::out_degree_random(int edges) {
 	while (remaining > 0) {
 		int i = rand.random_int() % neurons;
 		int j = rand.random_int() % neurons;
-		if (i != j && abs(weight[i][j]) > MIN_RES) {
+		if (i != j && abs(weight[i][j]) < MIN_RES) {
 			weight[i][j] = rand.random_interval(-1, 1);
 			if (abs(weight[i][j]) > MIN_RES)
 				remaining--;
