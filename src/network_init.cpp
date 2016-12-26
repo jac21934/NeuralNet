@@ -79,6 +79,8 @@ void network::out_degree_random(int edges) {
 				remaining--;
 		}
 	}
+
+	normalize_and_recount();
 }
 
 void network::out_degree_scale_free(double lambda) {

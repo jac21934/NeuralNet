@@ -2,7 +2,7 @@ Number of neurons
 #NET_SIZE: 500
 
 What constitutes a neuron firing
-#FIRE_THRESHOLD: 10
+#FIRE_THRESHOLD: 3
 
 Controls neuron decrease in down state transition
 #INHIBITION: 0.017
@@ -20,7 +20,7 @@ Attaches nodes so as to create a scale free network of given exponent
 #LAMBDA: 2
 
 Attaches nodes to one another at random
-;#RANDOMIZE
+RANDOMIZE: 1200
 
 Attaches nodes with uniform degree
-;#OUT_DEGREE: 10
+OUT_DEGREE: 2
