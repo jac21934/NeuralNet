@@ -5,29 +5,29 @@
 #include <iomanip>
 
 template <typename T>
-void print_matrix(T **matrix, int rows, int cols) {
+void print_matrix(T **matrix, int rows, int cols, std::ostream &stream) {
 	for (int i = 0; i < rows; i++) {
-		std::cout << "| ";
+		stream << "| ";
 
 		for (int j = 0; j < cols; j++) {
-			std::cout << std::setw(7) << matrix[i][j] << "  ";
+			stream << std::setw(7) << matrix[i][j] << "  ";
 		}
 
-		std::cout << "|" << std::endl;
+		stream << "|" << std::endl;
 	}
 
-	std::cout << std::endl;
+	stream << std::endl;
 }
 
 template <typename T>
-void print_vec(T *vec, int size) {
-	std::cout << "{ ";
+void print_vec(T *vec, int size, std::ostream &stream) {
+	stream << "{ ";
 	for (int i = 0; i < size; i++) {
-		std::cout << std::setw(7) << vec[i];
+		stream << std::setw(7) << vec[i];
 		if (i < size - 1)
-			std::cout << ", ";
+			stream << ", ";
 	}
-	std::cout << " }" << std::endl;
+	stream << " }" << std::endl;
 }
 
 #endif /*OUTPUT_H*/

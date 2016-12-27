@@ -40,6 +40,7 @@ void network::run(bool verbose) {
 				} else if (neuron_last[j] > fire_threshold) {
 					avalanche = true;
 					refractory[j] = true;
+					active[j] = true;
 					neuron[j] = 0;
 				} else if (in_degree[j] != 0) {
 					for (int i = 0; i < neurons; i++) {
@@ -47,15 +48,12 @@ void network::run(bool verbose) {
 							// TODO In principle, there could be a constant coefficient of some kind here. Should it be 1?
 							double delta = neuron_last[i] * out_degree[i] * weight[i][j] / in_degree[j];
 							neuron[j] += delta;
-
-							if (delta > 0)
-								depol[j] += delta;
+							depol[j] += delta;
 						}
 					}
 
 					if (neuron[j] > fire_threshold) {
 						firing_next++;
-						active[j] = true;
 					}
 				}
 			}
@@ -103,21 +101,18 @@ void network::run(bool verbose) {
 					}
 				}
 			}
-
-			normalize_and_recount();
-			if (verbose) { cerr << "Bonds: " << bond_number << endl; }
 		
+			normalize_and_recount();
+
 			// Up/down state transition
 			if (depol_sum > transition) {
-				if (verbose) { cerr << "Down: "; }
 				// down state
 				for (int i = 0; i < neurons; i++) {
 					if (active[i]) {
 						neuron[i] -= inhibition * depol[i];
 					}
 				}
-			} else {
-				if (verbose) { cerr << "Up voltage " << fire_threshold * (1 - depol_sum / transition) << ": "; }
+			} else if (depol_sum > 0) {
 				// up state
 				for (int i = 0; i < neurons; i++) {
 					if (active[i]) {
@@ -125,7 +120,6 @@ void network::run(bool verbose) {
 					}
 				}
 			}
-			if (verbose) { cerr << depol_sum << endl; }
 		}
 		poke_random_neuron();
 	}
