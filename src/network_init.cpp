@@ -74,7 +74,7 @@ void network::out_degree_random(int edges) {
 		int i = rand.random_int() % neurons;
 		int j = rand.random_int() % neurons;
 		if (i != j && abs(weight[i][j]) < MIN_RES) {
-			weight[i][j] = rand.random_interval(-1, 1);
+			weight[i][j] = rand.random_real();
 			if (abs(weight[i][j]) > MIN_RES)
 				remaining--;
 		}
@@ -122,10 +122,19 @@ void network::set_out_degree(int i, int degree) {
 	while (connections_left > 0) {
 		int j = rand.random_int() % neurons;
 		if (j != i && abs(weight[i][j]) < MIN_RES) {
-			weight[i][j] = rand.random_interval(-1, 1);
+			weight[i][j] = rand.random_real();
 			if (abs(weight[i][j]) > MIN_RES) {
 				connections_left--;
 			}
+		}
+	}
+}
+
+void network::inhibitory_fraction(double fraction) {
+	for (int i = 0; i < neurons; i++) {
+		if (rand.random_real() < fraction) {
+			for (int j = 0; j < neurons; j++)
+				weight[i][j] = -weight[i][j];
 		}
 	}
 }

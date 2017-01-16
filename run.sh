@@ -14,8 +14,10 @@ for i in `seq 0 99`; do
 
 	if [ $? != 0 ]; then
 		echo "Timed out"
+		sleep 1
 		rm data/out$i
 	fi
 done
 
+echo "Outputting final probability distribution"
 python "$DIR/prob.py" data/out* > final

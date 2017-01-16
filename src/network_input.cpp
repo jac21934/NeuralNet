@@ -52,6 +52,9 @@ void network::check_input(ifstream &inFile) {
 			transition = atof(input.substr(22).c_str());
 		} else if (input.substr(1, 6) == "NOISE:") {
 			noise_strength = atof(input.substr(7).c_str());
+		} else if (input.substr(1, 20) == "INHIBITORY_FRACTION:") {
+			float fraction = atof(input.substr(21).c_str());
+			inhibitory_fraction(fraction);
 		}
 	}
 }
