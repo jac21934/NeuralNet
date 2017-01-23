@@ -15,49 +15,70 @@ void network::run(bool verbose) {
 	double *neuron_last = new double[neurons];
 	bool *refractory_last = new bool[neurons];
 	double *depol = new double[neurons];
-	double *pre_avalanche = new double[neurons];
 	bool *active = new bool[neurons];
 
+	double **weight_old = new double*[neurons];
+	for (int i = 0; i < neurons; i++) {
+		weight_old[i] = new double[neurons + 1];
+	}
+
 	int last_avalanche = 0;
+	//bool up = true;
 
 	for (int t = 0; t < max_turns; t++) {
+		for (int i = 0; i < neurons; i++) {
+			memcpy(weight_old[i], weight[i], (neurons + 1) * sizeof(double));
+		}
 		memset(depol, 0, neurons * sizeof(double));
-		memcpy(pre_avalanche, neuron, neurons * sizeof(double));
 		memset(active, false, neurons * sizeof(bool));
 
 		// Avalanche
-		int firing_next;
+		bool keep_going;
 		bool avalanche = false;
+		double average_weight_increase = 0;
 		do {
 			memcpy(neuron_last, neuron, neurons * sizeof(double));
 			memcpy(refractory_last, refractory, neurons * sizeof(bool));
 
-			firing_next = 0;
+			keep_going = false;
 			
-			for (int j = 0; j < neurons; j++) {
-				if (refractory_last[j]) {
-					refractory[j] = false;
-				} else if (neuron_last[j] > fire_threshold) {
+			for (int i = 0; i < neurons; i++) {
+				if (refractory_last[i]) {
+					refractory[i] = false;
+					neuron[i] = 0;
+				} else if (neuron_last[i] > fire_threshold) {
 					avalanche = true;
-					refractory[j] = true;
-					active[j] = true;
-					neuron[j] = 0;
-				} else if (in_degree[j] != 0) {
-					for (int i = 0; i < neurons; i++) {
-						if (abs(weight[i][j]) > MIN_RES && !refractory_last[i] && neuron_last[i] > fire_threshold) {
-							// TODO In principle, there could be a constant coefficient of some kind here. Should it be 1?
-							double delta = neuron_last[i] * out_degree[i] * weight[i][j] / in_degree[j];
-							neuron[j] += delta;
-							depol[j] += delta;
-						}
-					}
+					refractory[i] = true;
+					active[i] = true;
 
-					if (neuron[j] > fire_threshold) {
-						firing_next++;
+					for (int j = 0; j < neurons; j++) {
+						if (abs(weight_old[i][j]) > MIN_RES && !refractory_last[j]) {
+							double delta = neuron_last[i] * out_degree[i] * weight_old[i][j] / in_degree[j] / weight_old[i][neurons];
+							neuron[j] += delta;
+							if (!keep_going && neuron[j] > fire_threshold)
+								keep_going = true;
+
+							average_weight_increase += abs(delta) / fire_threshold;
+							if (weight_old[i][j] < 0)
+								weight[i][j] -= abs(delta) / fire_threshold;
+							else
+								weight[i][j] += abs(delta) / fire_threshold;
+
+							if (delta > 0)
+								depol[j] += delta;
+
+							if (!isfinite(weight[i][j]) || !isfinite(average_weight_increase) || !isfinite(depol[j])) {
+								cerr << "Shit!" << endl;
+								cerr << "weight[" << i << "][" << j << "]: " << weight[i][j] << endl;
+								cerr << "average_weight_increase: " << average_weight_increase << endl;
+								cerr << "depol[" << j << "]: " << depol[j] << endl;
+								exit(-1);
+							}
+						}
 					}
 				}
 			}
-		} while (firing_next > 0);
+		} while (keep_going);
 
 		if (avalanche) {
 			// Reporting
@@ -65,8 +86,22 @@ void network::run(bool verbose) {
 				cout << t - last_avalanche << endl;
 			last_avalanche = t;
 
-			// Not-actually-Hebbian Plasticity
 			double depol_sum = 0;
+			for (int i = 0; i < neurons; i++) {
+				depol_sum += depol[i];
+
+				//if (!active[i]) {
+				for (int j = 0; j < neurons; j++) {
+					double delta = min(average_weight_increase / bond_number, abs(weight[i][j]));
+					if (weight[i][j] < 0)
+						weight[i][j] += delta;
+					else
+						weight[i][j] -= delta;
+				}
+			}
+
+			// Not-actually-Hebbian Plasticity
+			/*double depol_sum = 0;
 			double average_weight_increase = 0;
 			for (int i = 0; i < neurons; i++) {
 				depol_sum += depol[i];
@@ -92,27 +127,30 @@ void network::run(bool verbose) {
 				if (!active[i]) {
 					for (int j = 0; j < neurons; j++) {
 						if (abs(weight[i][j]) > MIN_RES) {
+							double delta = average_weight_increase / bond_number;
 							if (weight[i][j] < 0) {
-								weight[i][j] += average_weight_increase / bond_number;
+								weight[i][j] += delta;
 							} else {
-								weight[i][j] -= average_weight_increase / bond_number;
+								weight[i][j] -= delta;
 							}
 						}
 					}
 				}
-			}
+			} */
 		
 			normalize_and_recount();
 
 			// Up/down state transition
 			if (depol_sum > transition) {
+				//up = false;
 				// down state
 				for (int i = 0; i < neurons; i++) {
 					if (active[i]) {
 						neuron[i] -= inhibition * depol[i];
 					}
 				}
-			} else if (depol_sum > 0) {
+			} else {
+				//up = true;
 				// up state
 				for (int i = 0; i < neurons; i++) {
 					if (active[i]) {
@@ -124,8 +162,11 @@ void network::run(bool verbose) {
 		poke_random_neuron();
 	}
 
+	for (int i = 0; i < neurons; i++)
+		delete[] weight_old[i];
+	delete[] weight_old;
+
 	delete[] active;
-	delete[] pre_avalanche;
 	delete[] depol;
 	delete[] refractory_last;
 	delete[] neuron_last;
@@ -154,8 +195,6 @@ void network::normalize_and_recount(void) {
 				weight_sum += abs(weight[i][j]);
 			}
 		}
-		for (int j = 0; j < neurons; j++) {
-			weight[i][j] /= weight_sum;
-		}
+		weight[i][neurons] = weight_sum;
 	}
 }

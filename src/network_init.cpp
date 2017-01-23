@@ -35,7 +35,7 @@ void network::construct(void) {
 	refractory = new bool[neurons]();
 
 	for (int i = 0; i < neurons; i++) {
-		weight[i] = new double[neurons]();
+		weight[i] = new double[neurons + 1]();
 	}
 
 	initialized = true;
