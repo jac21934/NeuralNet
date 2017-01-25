@@ -2,6 +2,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <cstring>
+#include <random>
 
 #include "network.h"
 #include "output.h"
@@ -173,8 +174,11 @@ void network::run(bool verbose) {
 }
 
 void network::poke_random_neuron(void) {
-	int i = rand.random_int() % neurons;
-	neuron[i] += rand.random_real() * 0.2;
+	uniform_int_distribution<int> neuron_dist(0, neurons - 1);
+	uniform_real_distribution<double> noise_dist(0, noise_strength);
+
+	int i = neuron_dist(rand);
+	neuron[i] += noise_dist(rand);
 }
 
 void network::normalize_and_recount(void) {

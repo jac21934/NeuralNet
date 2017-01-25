@@ -3,8 +3,7 @@
 
 #include <string>
 #include <fstream>
-
-#include "random_lib.h"
+#include <random>
 
 #define MIN_RES 0.0000001
 
@@ -58,7 +57,7 @@ private:
 
 	bool initialized;
 
-	Random rand;
+	std::mt19937 rand;
 };
 
 #endif /*NETWORK_H*/

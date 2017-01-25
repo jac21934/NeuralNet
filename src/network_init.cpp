@@ -3,12 +3,13 @@
 #include <stdexcept>
 #include <cmath>
 #include <algorithm>
+#include <random>
 
 #include "network.h"
 
 using namespace std;
 
-network::network(void) {
+network::network(void) : rand((random_device())()) {
 	neurons = 0;
 	max_turns = 0;
 	initialized = false;
@@ -60,8 +61,10 @@ void network::destruct(void) {
 void network::out_degree_random(void) {
 	construct();
 
+	uniform_int_distribution<int> neuron_dist(0, neurons - 1);
+
 	for (int i = 0; i < neurons; i++) {
-		set_out_degree(i, rand.random_int() % neurons);
+		set_out_degree(i, neuron_dist(rand));
 	}
 	normalize_and_recount();
 }
@@ -69,14 +72,16 @@ void network::out_degree_random(void) {
 void network::out_degree_random(int edges) {
 	construct();
 
+	uniform_int_distribution<int> neuron_dist(0, neurons - 1);
+	uniform_real_distribution<double> weight_dist(MIN_RES, 1.0);
+
 	int remaining = edges;
 	while (remaining > 0) {
-		int i = rand.random_int() % neurons;
-		int j = rand.random_int() % neurons;
+		int i = neuron_dist(rand);
+		int j = neuron_dist(rand);
 		if (i != j && abs(weight[i][j]) < MIN_RES) {
-			weight[i][j] = rand.random_real();
-			if (abs(weight[i][j]) > MIN_RES)
-				remaining--;
+			weight[i][j] = weight_dist(rand);
+			remaining--;
 		}
 	}
 
@@ -118,21 +123,24 @@ void network::out_degree_uniform(int degree) {
 }
 
 void network::set_out_degree(int i, int degree) {
+	uniform_int_distribution<int> neuron_dist(0, neurons - 1);
+	uniform_real_distribution<double> weight_dist(MIN_RES, 1.0);
+
 	int connections_left = degree;
 	while (connections_left > 0) {
-		int j = rand.random_int() % neurons;
+		int j = neuron_dist(rand);
 		if (j != i && abs(weight[i][j]) < MIN_RES) {
-			weight[i][j] = rand.random_real();
-			if (abs(weight[i][j]) > MIN_RES) {
-				connections_left--;
-			}
+			weight[i][j] = weight_dist(rand);
+			connections_left--;
 		}
 	}
 }
 
 void network::inhibitory_fraction(double fraction) {
+	bernoulli_distribution dist(fraction);
+
 	for (int i = 0; i < neurons; i++) {
-		if (rand.random_real() < fraction) {
+		if (dist(rand)) {
 			for (int j = 0; j < neurons; j++)
 				weight[i][j] = -weight[i][j];
 		}

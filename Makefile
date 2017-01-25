@@ -10,7 +10,7 @@ CXXFLAGS	= -O3
 LDFLAGS		=
 LDLIBS		=
 
-SRCFILES = network_output.cpp network_init.cpp network_input.cpp main.cpp random_lib.cpp network.cpp
+SRCFILES = network_output.cpp network_init.cpp network_input.cpp main.cpp network.cpp
 SRCDIR = src/
 SRCS = $(addprefix $(SRCDIR), $(SRCFILES))
 OBJS = $(SRCS:.cpp=.o)

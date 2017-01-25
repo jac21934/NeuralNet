@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TIMEOUT=20m
+TIMEOUT=30m
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 trap 'kill -INT -$pid; rm data/out$i; echo; exit' INT
