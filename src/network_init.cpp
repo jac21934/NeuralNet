@@ -1,11 +1,9 @@
-#include <climits>
-#include <iostream>
 #include <stdexcept>
 #include <cmath>
-#include <algorithm>
 #include <random>
 
 #include "network.h"
+#include "power_law.h"
 
 using namespace std;
 
@@ -91,22 +89,10 @@ void network::out_degree_random(int edges) {
 void network::out_degree_scale_free(double lambda) {
 	construct();
 
-	double harmonic = 0;
-	for (int i = 1; i <= neurons; i++) {
-		harmonic += pow(i, -lambda);
-	}
+	power_law_distribution<int> dist(1, neurons, lambda);
 
-	int i = 0;
-	for (int k = 1; i < neurons; k++) {
-		int count = min((int) round(pow(k, -lambda) * neurons / harmonic), neurons - i);
-		if (count == 0) {
-			count = neurons - i;
-			k = 1;
-		}
-		for (; count > 0; count--) {
-			set_out_degree(i, k);
-			i++;
-		}
+	for (int i = 0; i < neurons; i++) {
+		set_out_degree(i, dist(rand));
 	}
 
 	normalize_and_recount();
