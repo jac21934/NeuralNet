@@ -17,12 +17,21 @@ void network::run() {
 	double *depol = new double[neurons];
 	bool *active = new bool[neurons];
 
+	double **weight_old = new double*[neurons];
+	for (int i = 0; i < neurons; i++) {
+		weight_old[i] = new double[neurons + 1];
+	}
+
 	int last_avalanche = 0;
 	//bool up = true;
 
 	for (int t = 0; t < max_turns; t++) {
 		memset(depol, 0, neurons * sizeof(double));
 		memset(active, false, neurons * sizeof(bool));
+
+		for (int i = 0; i < neurons; i++) {
+			memcpy(weight_old[i], weight[i], (neurons + 1) * sizeof(double));
+		}
 
 		// Avalanche
 		bool keep_going;
@@ -44,10 +53,8 @@ void network::run() {
 					active[i] = true;
 
 					for (int j = 0; j < neurons; j++) {
-						double neuron_weight_increase = 0;
-
-						if (abs(weight[i][j]) > MIN_RES && !refractory_last[j]) {
-							double delta = neuron_last[i] * out_degree[i] * weight[i][j] / in_degree[j] / weight[i][neurons];
+						if (abs(weight_old[i][j]) > MIN_RES && !refractory_last[j]) {
+							double delta = neuron_last[i] * out_degree[i] * weight_old[i][j] / in_degree[j] / weight_old[i][neurons];
 
 							neuron[j] += delta;
 							if (!keep_going && neuron[j] > fire_threshold)
@@ -58,20 +65,19 @@ void network::run() {
 							else
 								weight[i][j] += abs(delta) / fire_threshold;
 							net_weight_increase += abs(delta) / fire_threshold;
-							neuron_weight_increase += abs(delta) / fire_threshold;
 
 							// Should this be depol[j] or depol[i]?
 							depol[j] += abs(delta);
 
-							if (!isfinite(weight[i][j]) || !isfinite(net_weight_increase) || !isfinite(depol[j])) {
+							if (!isfinite(delta) || !isfinite(weight[i][j]) || !isfinite(net_weight_increase) || !isfinite(depol[j])) {
 								cerr << "Something's gone wrong!" << endl;
+								cerr << "delta: " << delta << endl;
 								cerr << "weight[" << i << "][" << j << "]: " << weight[i][j] << endl;
 								cerr << "net_weight_increase: " << net_weight_increase << endl;
 								cerr << "depol[" << j << "]: " << depol[j] << endl;
 								exit(-1);
 							}
 						}
-						weight[i][neurons] += neuron_weight_increase;
 					}
 				}
 			}
