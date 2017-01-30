@@ -20,7 +20,7 @@ public:
 	~network(void);
 
 	// network.cpp
-	void run(bool verbose);
+	void run();
 
 private:
 	// network_init.cpp

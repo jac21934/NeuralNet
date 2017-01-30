@@ -5,11 +5,10 @@
 #include <random>
 
 #include "network.h"
-#include "output.h"
 
 using namespace std;
 
-void network::run(bool verbose) {
+void network::run() {
 	if (!initialized)
 		throw runtime_error("Network not initialized");
 
@@ -18,25 +17,17 @@ void network::run(bool verbose) {
 	double *depol = new double[neurons];
 	bool *active = new bool[neurons];
 
-	double **weight_old = new double*[neurons];
-	for (int i = 0; i < neurons; i++) {
-		weight_old[i] = new double[neurons + 1];
-	}
-
 	int last_avalanche = 0;
 	//bool up = true;
 
 	for (int t = 0; t < max_turns; t++) {
-		for (int i = 0; i < neurons; i++) {
-			memcpy(weight_old[i], weight[i], (neurons + 1) * sizeof(double));
-		}
 		memset(depol, 0, neurons * sizeof(double));
 		memset(active, false, neurons * sizeof(bool));
 
 		// Avalanche
 		bool keep_going;
 		bool avalanche = false;
-		double average_weight_increase = 0;
+		double net_weight_increase = 0;
 		do {
 			memcpy(neuron_last, neuron, neurons * sizeof(double));
 			memcpy(refractory_last, refractory, neurons * sizeof(bool));
@@ -53,29 +44,34 @@ void network::run(bool verbose) {
 					active[i] = true;
 
 					for (int j = 0; j < neurons; j++) {
-						if (abs(weight_old[i][j]) > MIN_RES && !refractory_last[j]) {
-							double delta = neuron_last[i] * out_degree[i] * weight_old[i][j] / in_degree[j] / weight_old[i][neurons];
+						double neuron_weight_increase = 0;
+
+						if (abs(weight[i][j]) > MIN_RES && !refractory_last[j]) {
+							double delta = neuron_last[i] * out_degree[i] * weight[i][j] / in_degree[j] / weight[i][neurons];
+
 							neuron[j] += delta;
 							if (!keep_going && neuron[j] > fire_threshold)
 								keep_going = true;
 
-							average_weight_increase += abs(delta) / fire_threshold;
-							if (weight_old[i][j] < 0)
+							if (weight[i][j] < 0)
 								weight[i][j] -= abs(delta) / fire_threshold;
 							else
 								weight[i][j] += abs(delta) / fire_threshold;
+							net_weight_increase += abs(delta) / fire_threshold;
+							neuron_weight_increase += abs(delta) / fire_threshold;
 
-							if (delta > 0)
-								depol[j] += delta;
+							// Should this be depol[j] or depol[i]?
+							depol[j] += abs(delta);
 
-							if (!isfinite(weight[i][j]) || !isfinite(average_weight_increase) || !isfinite(depol[j])) {
-								cerr << "Shit!" << endl;
+							if (!isfinite(weight[i][j]) || !isfinite(net_weight_increase) || !isfinite(depol[j])) {
+								cerr << "Something's gone wrong!" << endl;
 								cerr << "weight[" << i << "][" << j << "]: " << weight[i][j] << endl;
-								cerr << "average_weight_increase: " << average_weight_increase << endl;
+								cerr << "net_weight_increase: " << net_weight_increase << endl;
 								cerr << "depol[" << j << "]: " << depol[j] << endl;
 								exit(-1);
 							}
 						}
+						weight[i][neurons] += neuron_weight_increase;
 					}
 				}
 			}
@@ -91,59 +87,19 @@ void network::run(bool verbose) {
 			for (int i = 0; i < neurons; i++) {
 				depol_sum += depol[i];
 
-				//if (!active[i]) {
 				for (int j = 0; j < neurons; j++) {
-					double delta = min(average_weight_increase / bond_number, abs(weight[i][j]));
+					double delta = min(net_weight_increase / bond_number, abs(weight[i][j]));
 					if (weight[i][j] < 0)
 						weight[i][j] += delta;
 					else
 						weight[i][j] -= delta;
 				}
 			}
-
-			// Not-actually-Hebbian Plasticity
-			/*double depol_sum = 0;
-			double average_weight_increase = 0;
-			for (int i = 0; i < neurons; i++) {
-				depol_sum += depol[i];
-
-				// Strengthen active links with positive correlation, weaken negative
-				if (active[i]) {
-					for (int j = 0; j < neurons; j++) {
-						if (abs(weight[i][j]) > MIN_RES) {
-							double delta = (neuron[j] - pre_avalanche[j]) / fire_threshold;
-							average_weight_increase += delta;
-							if (weight[i][j] < 0) {
-								weight[i][j] -= delta;
-							} else {
-								weight[i][j] += delta;
-							}
-						}
-					}
-				}
-			}
-
-			// Weaken inactive links
-			for (int i = 0; i < neurons; i++) {
-				if (!active[i]) {
-					for (int j = 0; j < neurons; j++) {
-						if (abs(weight[i][j]) > MIN_RES) {
-							double delta = average_weight_increase / bond_number;
-							if (weight[i][j] < 0) {
-								weight[i][j] += delta;
-							} else {
-								weight[i][j] -= delta;
-							}
-						}
-					}
-				}
-			} */
 		
 			normalize_and_recount();
 
 			// Up/down state transition
 			if (depol_sum > transition) {
-				//up = false;
 				// down state
 				for (int i = 0; i < neurons; i++) {
 					if (active[i]) {
@@ -151,7 +107,6 @@ void network::run(bool verbose) {
 					}
 				}
 			} else {
-				//up = true;
 				// up state
 				for (int i = 0; i < neurons; i++) {
 					if (active[i]) {
@@ -162,10 +117,6 @@ void network::run(bool verbose) {
 		}
 		poke_random_neuron();
 	}
-
-	for (int i = 0; i < neurons; i++)
-		delete[] weight_old[i];
-	delete[] weight_old;
 
 	delete[] active;
 	delete[] depol;
