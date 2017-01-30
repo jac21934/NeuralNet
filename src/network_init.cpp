@@ -1,13 +1,14 @@
 #include <stdexcept>
 #include <cmath>
 #include <random>
+#include <chrono>
 
 #include "network.h"
 #include "power_law.h"
 
 using namespace std;
 
-network::network(void) : rand((random_device())()) {
+network::network(void) : rand(std::chrono::system_clock::now().time_since_epoch().count()) {
 	neurons = 0;
 	max_turns = 0;
 	initialized = false;
