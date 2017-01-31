@@ -8,10 +8,7 @@
 
 using namespace std;
 
-void network::run() {
-	if (!initialized)
-		throw runtime_error("Network not initialized");
-
+void Network::run() {
 	double *neuron_last = new double[neurons];
 	bool *refractory_last = new bool[neurons];
 	double *depol = new double[neurons];
@@ -23,7 +20,6 @@ void network::run() {
 	}
 
 	int last_avalanche = 0;
-	//bool up = true;
 
 	for (int t = 0; t < max_turns; t++) {
 		memset(depol, 0, neurons * sizeof(double));
@@ -66,11 +62,15 @@ void network::run() {
 								weight[i][j] += abs(delta) / fire_threshold;
 							net_weight_increase += abs(delta) / fire_threshold;
 
-							// Should this be depol[j] or depol[i]?
+							// TODO Should this be depol[j] or depol[i]?
 							depol[j] += abs(delta);
 
 							if (!isfinite(delta) || !isfinite(weight[i][j]) || !isfinite(net_weight_increase) || !isfinite(depol[j])) {
 								cerr << "Something's gone wrong!" << endl;
+								cerr << "neuron_last[" << i << "]: " << neuron_last[i] << endl;
+								cerr << "out_degree[" << i << "]: " << out_degree[i] << endl;
+								cerr << "in_degree[" << j << "]: " << in_degree[j] << endl;
+								cerr << "weight_old[" << i << "][" << j << "]: " << weight_old[i][j] << endl;
 								cerr << "delta: " << delta << endl;
 								cerr << "weight[" << i << "][" << j << "]: " << weight[i][j] << endl;
 								cerr << "net_weight_increase: " << net_weight_increase << endl;
@@ -84,11 +84,6 @@ void network::run() {
 		} while (keep_going);
 
 		if (avalanche) {
-			// Reporting
-			if (last_avalanche != 0)
-				cout << t - last_avalanche << endl;
-			last_avalanche = t;
-
 			double depol_sum = 0;
 			for (int i = 0; i < neurons; i++) {
 				depol_sum += depol[i];
@@ -109,7 +104,7 @@ void network::run() {
 				// down state
 				for (int i = 0; i < neurons; i++) {
 					if (active[i]) {
-						neuron[i] -= inhibition * depol[i];
+						neuron[i] -= disfacilitation * depol[i];
 					}
 				}
 			} else {
@@ -120,8 +115,13 @@ void network::run() {
 					}
 				}
 			}
+
+			// Reporting
+			if (last_avalanche != 0)
+				cout << t - last_avalanche << endl;
+			last_avalanche = t;
 		}
-		poke_random_neuron();
+		noise(neuron, neurons);
 	}
 
 	delete[] active;
@@ -130,15 +130,7 @@ void network::run() {
 	delete[] neuron_last;
 }
 
-void network::poke_random_neuron(void) {
-	uniform_int_distribution<int> neuron_dist(0, neurons - 1);
-	uniform_real_distribution<double> noise_dist(0, noise_strength);
-
-	int i = neuron_dist(rand);
-	neuron[i] += noise_dist(rand);
-}
-
-void network::normalize_and_recount(void) {
+void Network::normalize_and_recount(void) {
 	bond_number = 0;
 
 	for (int j = 0; j < neurons; j++) {

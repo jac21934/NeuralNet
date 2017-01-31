@@ -5,25 +5,19 @@ What constitutes a neuron firing
 #FIRE_THRESHOLD: 6
 
 Controls neuron decrease in down state transition
-#INHIBITION: 0.02
+#DISFACILITATION: 0.02
 
 When to transition into down/up states
 #TRANSITION_THRESHOLD: 110
 
 Total number of simulation steps
-#MAX_TURNS: 200000
+#MAX_TURNS: 500000
 
 How much should neurons be poked between avalanches?
 #NOISE: 0.2
 
 Attaches nodes so as to create a scale free network of given exponent
-#LAMBDA: 2
+#LAMBDA: 2, 0.1
 
-Attaches nodes to one another at random
-RANDOMIZE: 1200
-
-Attaches nodes with uniform degree
-OUT_DEGREE: 2
-
-What fraction of neurons are inhibitory?
-#INHIBITORY_FRACTION: 0.1
+Attaches nodes at random with uniform out degree
+OUT_DEGREE: 2, 0.1
