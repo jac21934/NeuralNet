@@ -9,7 +9,7 @@ for file in sys.argv[1:]:
 	count = 0
 	hist = {}
 	for line in data:
-		i = int(line)
+		i = int(line.split()[2])
 		
 		count = count + 1
 

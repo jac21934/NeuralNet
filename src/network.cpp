@@ -20,6 +20,8 @@ void Network::run() {
 	}
 
 	int last_avalanche = 0;
+	int avalanches = 0;
+	int down = 0;
 
 	for (int t = 0; t < max_turns; t++) {
 		memset(depol, 0, neurons * sizeof(double));
@@ -67,10 +69,21 @@ void Network::run() {
 
 							if (!isfinite(delta) || !isfinite(weight[i][j]) || !isfinite(net_weight_increase) || !isfinite(depol[j])) {
 								cerr << "Something's gone wrong!" << endl;
+
 								cerr << "neuron_last[" << i << "]: " << neuron_last[i] << endl;
+								cerr << "refractory_last[" << i << "]: " << refractory_last[i] << endl;
+								cerr << "neuron[" << i << "]: " << neuron[i] << endl;
+								cerr << "refractory[" << i << "]: " << refractory[i] << endl;
+
+								cerr << "neuron_last[" << j << "]: " << neuron_last[j] << endl;
+								cerr << "refractory_last[" << j << "]: " << refractory_last[j] << endl;
+								cerr << "neuron[" << j << "]: " << neuron[j] << endl;
+								cerr << "refractory[" << j << "]: " << refractory[j] << endl;
+
 								cerr << "out_degree[" << i << "]: " << out_degree[i] << endl;
 								cerr << "in_degree[" << j << "]: " << in_degree[j] << endl;
 								cerr << "weight_old[" << i << "][" << j << "]: " << weight_old[i][j] << endl;
+								cerr << "weight sum: " << weight_old[i][neurons] << endl;
 								cerr << "delta: " << delta << endl;
 								cerr << "weight[" << i << "][" << j << "]: " << weight[i][j] << endl;
 								cerr << "net_weight_increase: " << net_weight_increase << endl;
@@ -102,6 +115,7 @@ void Network::run() {
 			// Up/down state transition
 			if (depol_sum > transition) {
 				// down state
+				down++;
 				for (int i = 0; i < neurons; i++) {
 					if (active[i]) {
 						neuron[i] -= disfacilitation * depol[i];
@@ -117,12 +131,17 @@ void Network::run() {
 			}
 
 			// Reporting
-			if (last_avalanche != 0)
-				cout << t - last_avalanche << endl;
+			double weight_sum = 0;
+			for (int i = 0; i < neurons; i++)
+				weight_sum += weight[i][neurons];
+			cout << (double) bond_number / neurons / neurons << '\t' << weight_sum << '\t' << t - last_avalanche << '\t' << depol_sum << endl;
 			last_avalanche = t;
+			avalanches++;
 		}
 		noise(neuron, neurons);
 	}
+
+	cerr << (double) down / avalanches << endl;
 
 	delete[] active;
 	delete[] depol;
