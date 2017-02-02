@@ -14,11 +14,6 @@ void Network::run() {
 	double *depol = new double[neurons];
 	bool *active = new bool[neurons];
 
-	double **weight_old = new double*[neurons];
-	for (int i = 0; i < neurons; i++) {
-		weight_old[i] = new double[neurons + 1];
-	}
-
 	int last_avalanche = 0;
 	int avalanches = 0;
 	int down = 0;
@@ -27,14 +22,9 @@ void Network::run() {
 		memset(depol, 0, neurons * sizeof(double));
 		memset(active, false, neurons * sizeof(bool));
 
-		for (int i = 0; i < neurons; i++) {
-			memcpy(weight_old[i], weight[i], (neurons + 1) * sizeof(double));
-		}
-
 		// Avalanche
 		bool keep_going;
 		bool avalanche = false;
-		double net_weight_increase = 0;
 		do {
 			memcpy(neuron_last, neuron, neurons * sizeof(double));
 			memcpy(refractory_last, refractory, neurons * sizeof(bool));
@@ -51,23 +41,17 @@ void Network::run() {
 					active[i] = true;
 
 					for (int j = 0; j < neurons; j++) {
-						if (abs(weight_old[i][j]) > MIN_RES && !refractory_last[j]) {
-							double delta = neuron_last[i] * out_degree[i] * weight_old[i][j] / in_degree[j] / weight_old[i][neurons];
+						if (abs(weight[i][j]) > MIN_RES && !refractory_last[j]) {
+							double delta = neuron_last[i] * out_degree[i] * weight[i][j] / in_degree[j] / weight[i][neurons];
 
 							neuron[j] += delta;
 							if (!keep_going && neuron[j] > fire_threshold)
 								keep_going = true;
 
-							if (weight[i][j] < 0)
-								weight[i][j] -= abs(delta) / fire_threshold;
-							else
-								weight[i][j] += abs(delta) / fire_threshold;
-							net_weight_increase += abs(delta) / fire_threshold;
-
 							// TODO Should this be depol[j] or depol[i]?
 							depol[j] += abs(delta);
 
-							if (!isfinite(delta) || !isfinite(weight[i][j]) || !isfinite(net_weight_increase) || !isfinite(depol[j])) {
+							if (!isfinite(delta) || !isfinite(depol[j])) {
 								cerr << "Something's gone wrong!" << endl;
 
 								cerr << "neuron_last[" << i << "]: " << neuron_last[i] << endl;
@@ -82,11 +66,9 @@ void Network::run() {
 
 								cerr << "out_degree[" << i << "]: " << out_degree[i] << endl;
 								cerr << "in_degree[" << j << "]: " << in_degree[j] << endl;
-								cerr << "weight_old[" << i << "][" << j << "]: " << weight_old[i][j] << endl;
-								cerr << "weight sum: " << weight_old[i][neurons] << endl;
 								cerr << "delta: " << delta << endl;
 								cerr << "weight[" << i << "][" << j << "]: " << weight[i][j] << endl;
-								cerr << "net_weight_increase: " << net_weight_increase << endl;
+								cerr << "weight sum: " << weight[i][neurons] << endl;
 								cerr << "depol[" << j << "]: " << depol[j] << endl;
 								exit(-1);
 							}
@@ -98,9 +80,22 @@ void Network::run() {
 
 		if (avalanche) {
 			double depol_sum = 0;
+			double net_weight_increase = 0;
 			for (int i = 0; i < neurons; i++) {
 				depol_sum += depol[i];
 
+				for (int j = 0; j < neurons; j++) {
+					if (weight[i][j] < 0)
+						weight[i][j] -= depol[j] / fire_threshold;
+					else
+						weight[i][j] += depol[j] / fire_threshold;
+					net_weight_increase += depol[j] / fire_threshold;
+				}
+			}
+
+			normalize_and_recount();
+
+			for (int i = 0; i < neurons; i++) {
 				for (int j = 0; j < neurons; j++) {
 					double delta = min(net_weight_increase / bond_number, abs(weight[i][j]));
 					if (weight[i][j] < 0)
