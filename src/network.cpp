@@ -48,7 +48,6 @@ void Network::run() {
 							if (!keep_going && neuron[j] > fire_threshold)
 								keep_going = true;
 
-							// TODO Should this be depol[j] or depol[i]?
 							depol[j] += abs(delta);
 
 							if (!isfinite(delta) || !isfinite(depol[j])) {
