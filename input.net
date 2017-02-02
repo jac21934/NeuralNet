@@ -1,5 +1,5 @@
 Number of neurons
-#NET_SIZE: 1000
+#NET_SIZE: 5000
 
 What constitutes a neuron firing
 #FIRE_THRESHOLD: 6
@@ -11,7 +11,7 @@ When to transition into down/up states
 #TRANSITION_THRESHOLD: 110
 
 Total number of simulation steps
-#MAX_TURNS: 500000
+#MAX_TURNS: 1000000
 
 How much should neurons be poked between avalanches?
 #NOISE: 0.2
