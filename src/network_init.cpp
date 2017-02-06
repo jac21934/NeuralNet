@@ -12,7 +12,8 @@ Network::Network(NetworkParams &params) {
 	max_turns = params.max_turns;
 	fire_threshold = params.fire_threshold;
 	transition = params.transition;
-	noise = params.noise;
+	nnoise = params.nnoise;
+	wnoise = params.wnoise;
 
 	neuron = new double[neurons];
 	out_degree = new int[neurons]();

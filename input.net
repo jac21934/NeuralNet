@@ -14,7 +14,10 @@ Total number of simulation steps
 #MAX_TURNS: 1000000
 
 How much should neurons be poked between avalanches?
-#NOISE: 0.2
+#NEURON_NOISE: 0.2
+
+How much should weights be poked between avalanches?
+#WEIGHT_NOISE: 0.1, 0.01
 
 Attaches nodes so as to create a scale free network of given exponent
 #LAMBDA: 2, 0.1

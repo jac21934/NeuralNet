@@ -103,7 +103,9 @@ void Network::run() {
 						weight[i][j] -= delta;
 				}
 			}
-		
+
+			wnoise(weight, neurons);
+
 			normalize_and_recount();
 
 			// Up/down state transition
@@ -132,7 +134,7 @@ void Network::run() {
 			last_avalanche = t;
 			avalanches++;
 		}
-		noise(neuron, neurons);
+		nnoise(neuron, neurons);
 	}
 
 	cerr << (double) down / avalanches << endl;

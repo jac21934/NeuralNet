@@ -11,6 +11,15 @@
 using namespace std;
 
 NetworkParams::NetworkParams(const string &filename, RNG &g): g(g) {
+	size = 0;
+	max_turns = 0;
+	fire_threshold = 0;
+	disfacilitation = 0;
+	transition = 0;
+	builder = NULL;
+	nnoise = NULL;
+	wnoise = NULL;
+
 	ifstream inFile(filename.c_str());
 
 	if (!inFile)
@@ -60,12 +69,20 @@ void NetworkParams::parse_file(ifstream &inFile) {
 
 			builder = bind(random_connectome<uniform_int_distribution<int>, RNG>, placeholders::_1, placeholders::_2, inhibit, dist, g);
 
-		} else if (input.substr(1, 6) == "NOISE:") {
+		} else if (input.substr(1, 6) == "NEURON_NOISE:") {
 			double noise_strength = atof(input.substr(7).c_str());
 
 			uniform_real_distribution<double> dist(0, noise_strength);
 
-			noise = bind(random_noise<uniform_real_distribution<double>, RNG>, placeholders::_1, placeholders::_2, dist, g);
+			nnoise = bind(neuron_noise<uniform_real_distribution<double>, RNG>, placeholders::_1, placeholders::_2, dist, g);
+		} else if (input.substr(1, 6) == "WEIGHT_NOISE:") {
+			size_t comma = input.find(',');
+			double mean = atof(input.substr(7, comma - 7).c_str());
+			double stdev = atof(input.substr(comma + 1).c_str());
+
+			normal_distribution<double> dist(mean, stdev);
+
+			wnoise = bind(weight_noise<normal_distribution<double>, RNG>, placeholders::_1, placeholders::_2, dist, g);
 		}
 	}
 }

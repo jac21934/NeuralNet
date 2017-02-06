@@ -29,7 +29,8 @@ private:
 	double disfacilitation;
 	double transition;
 
-	noise_gen noise;
+	neuron_noise_gen nnoise;
+	weight_noise_gen wnoise;
 };
 
 #endif /*NETWORK_H*/

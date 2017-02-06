@@ -10,7 +10,8 @@
 
 typedef std::mt19937 RNG;
 
-typedef std::function<void(double *, int)> noise_gen;
+typedef std::function<void(double *, int)> neuron_noise_gen;
+typedef std::function<void(double **, int)> weight_noise_gen;
 typedef std::function<void(double **, int)> connectome_builder;
 
 class NetworkParams {
@@ -28,7 +29,8 @@ private:
 	double disfacilitation;
 	double transition;
 	connectome_builder builder;
-	noise_gen noise;
+	neuron_noise_gen nnoise;
+	weight_noise_gen wnoise;
 };
 
 #endif /*NETWORK_PARAM_H*/
