@@ -128,9 +128,17 @@ void Network::run() {
 
 			// Reporting
 			double weight_sum = 0;
-			for (int i = 0; i < neurons; i++)
+			double num_active = 0;
+			for (int i = 0; i < neurons; i++) {
 				weight_sum += weight[i][neurons];
-			cout << (double) bond_number / neurons / neurons << '\t' << weight_sum << '\t' << t - last_avalanche << '\t' << depol_sum << endl;
+				if (active[i])
+					num_active++;
+			}
+			cout << (double) bond_number / neurons / neurons << '\t'
+				<< weight_sum << '\t'
+				<< t - last_avalanche << '\t'
+				<< depol_sum << '\t'
+				<< num_active << endl;
 			last_avalanche = t;
 			avalanches++;
 		}

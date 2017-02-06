@@ -1,5 +1,5 @@
 Number of neurons
-#NET_SIZE: 5000
+#NET_SIZE: 1000
 
 What constitutes a neuron firing
 #FIRE_THRESHOLD: 6
