@@ -104,7 +104,8 @@ void Network::run() {
 				}
 			}
 
-			wnoise(weight, neurons);
+			if (wnoise)
+				wnoise(weight, neurons);
 
 			normalize_and_recount();
 
