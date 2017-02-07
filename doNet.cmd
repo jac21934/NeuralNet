@@ -5,4 +5,4 @@ error           = errors/error.$(Process)
 log             = logs/log.$(Process)
 output          = data/out.$(Process)
 
-queue 100
+queue 50
