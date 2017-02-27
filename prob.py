@@ -1,5 +1,7 @@
 import sys
 
+binning = 0.5
+
 final_dist = {}
 files = 0
 for file in sys.argv[1:]:
@@ -9,7 +11,7 @@ for file in sys.argv[1:]:
 	count = 0
 	hist = {}
 	for line in data:
-		i = int(line.split()[2])
+		i = int(float(line.split()[2]) / binning)
 		
 		count = count + 1
 
@@ -25,4 +27,4 @@ for file in sys.argv[1:]:
 			final_dist[i] = float(hist[i]) / count
 
 for i in final_dist:
-	print i, float(final_dist[i]) / files
+	print binning * i, float(final_dist[i]) / files
