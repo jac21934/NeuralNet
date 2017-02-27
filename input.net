@@ -17,7 +17,7 @@ How much should neurons be poked between avalanches?
 #NEURON_NOISE: 0.2
 
 How much should weights be poked between avalanches?
-#WEIGHT_NOISE: 0.1, 0.01
+#WEIGHT_NOISE: 0.01, 0.001
 
 Attaches nodes so as to create a scale free network of given exponent
 #LAMBDA: 2, 0.1

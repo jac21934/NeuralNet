@@ -19,6 +19,8 @@ void Network::run() {
 	int down = 0;
 
 	for (int t = 0; t < max_turns; t++) {
+		int duration = 0;
+
 		memset(depol, 0, neurons * sizeof(double));
 		memset(active, false, neurons * sizeof(bool));
 
@@ -26,6 +28,8 @@ void Network::run() {
 		bool keep_going;
 		bool avalanche = false;
 		do {
+			duration++;
+
 			memcpy(neuron_last, neuron, neurons * sizeof(double));
 			memcpy(refractory_last, refractory, neurons * sizeof(bool));
 
@@ -138,6 +142,7 @@ void Network::run() {
 			cout << (double) bond_number / neurons / neurons << '\t'
 				<< weight_sum << '\t'
 				<< t - last_avalanche << '\t'
+				<< duration << '\t'
 				<< depol_sum << '\t'
 				<< num_active << endl;
 			last_avalanche = t;
