@@ -4,14 +4,24 @@ binning = 0.5
 
 final_dist = {}
 files = 0
-for file in sys.argv[1:]:
+
+file_list = sys.argv[1:]
+field = 2
+
+try:
+	field = int(sys.argv[1])
+	file_list = sys.argv[2:]
+except ValueError:
+	pass
+
+for file in file_list:
 	files = files + 1
 	data = open(file, "r")
 
 	count = 0
 	hist = {}
 	for line in data:
-		i = int(float(line.split()[2]) / binning)
+		i = int(float(line.split()[field]) / binning)
 		
 		count = count + 1
 
