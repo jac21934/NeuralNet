@@ -70,11 +70,13 @@ void NetworkParams::parse_file(ifstream &inFile) {
 			builder = bind(random_connectome<uniform_int_distribution<int>, RNG>, placeholders::_1, placeholders::_2, inhibit, dist, g);
 
 		} else if (input.substr(1, 13) == "NEURON_NOISE:") {
-			double noise_strength = atof(input.substr(14).c_str());
+			size_t comma = input.find(',');
+			double mean = atof(input.substr(14, comma - 14).c_str());
+			double stdev = atof(input.substr(comma + 1).c_str());
 
-			uniform_real_distribution<double> dist(0, noise_strength);
+			normal_distribution<double> dist(mean, stdev);
 
-			nnoise = bind(neuron_noise<uniform_real_distribution<double>, RNG>, placeholders::_1, placeholders::_2, dist, g);
+			nnoise = bind(neuron_noise<normal_distribution<double>, RNG>, placeholders::_1, placeholders::_2, dist, g);
 		} else if (input.substr(1, 13) == "WEIGHT_NOISE:") {
 			size_t comma = input.find(',');
 			double mean = atof(input.substr(14, comma - 14).c_str());

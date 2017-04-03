@@ -14,7 +14,7 @@ Total number of simulation steps
 #MAX_TURNS: 1000000
 
 How much should neurons be poked between avalanches?
-#NEURON_NOISE: 0.2
+#NEURON_NOISE: 0.2, 0.1
 
 How much should weights be poked between avalanches?
 #WEIGHT_NOISE: 0.1, 0.01
