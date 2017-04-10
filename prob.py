@@ -29,6 +29,7 @@ for file in file_list:
 			hist[i] = hist[i] + 1
 		except KeyError:
 			hist[i] = 1
+	data.close()
 
 	for i in hist:
 		try:
