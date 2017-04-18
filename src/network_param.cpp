@@ -56,7 +56,7 @@ void NetworkParams::parse_file(ifstream &inFile) {
 			double lambda = atof(input.substr(8, comma - 8).c_str());
 			double inhibit = atof(input.substr(comma + 1).c_str());
 
-			power_law_distribution<int> dist(2, 100, lambda);
+			power_law_distribution<int> dist(min(2, size - 1), min(100, size - 1), lambda);
 
 			builder = bind(random_connectome<power_law_distribution<int>, RNG>, placeholders::_1, placeholders::_2, inhibit, dist, g);
 

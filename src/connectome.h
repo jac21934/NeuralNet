@@ -26,7 +26,7 @@ void random_connectome(double **weights, int size, double inhibitory_fraction, d
 
 		while (remaining > 0) {
 			int j = neuron_dist(g);
-			if (i != j && abs(weights[i][j]) < MIN_RES) {
+			if (i != j && std::abs(weights[i][j]) < MIN_RES) {
 				weights[i][j] = weight_dist(g) * sign;
 				remaining--;
 			}
