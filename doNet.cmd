@@ -1,4 +1,4 @@
-executable      = /home/alnwarr/net
+executable      = /home/alnwarr/net/net
 universe        = standard
 
 error           = errors/error.$(Process)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CLEANUP=false
+CLEANUP=true
 CONDOR_FILE="/home/alnwarr/net/doNet.cmd"
 
 for var in *; do

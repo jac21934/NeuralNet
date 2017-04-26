@@ -16,7 +16,7 @@ void Network::run() {
 
 	int last_avalanche = 0;
 	int avalanches = 0;
-	int down = 0;
+	bool is_down = false;
 
 	for (int t = 0; t < max_turns; t++) {
 		int duration = 0;
@@ -116,7 +116,7 @@ void Network::run() {
 			// Up/down state transition
 			if (depol_sum > transition) {
 				// down state
-				down++;
+				is_down = true;
 				for (int i = 0; i < neurons; i++) {
 					if (active[i]) {
 						neuron[i] -= disfacilitation * depol[i];
@@ -124,6 +124,7 @@ void Network::run() {
 				}
 			} else {
 				// up state
+				is_down = false;
 				for (int i = 0; i < neurons; i++) {
 					if (active[i]) {
 						neuron[i] = fire_threshold * (1 - depol_sum / transition);
@@ -144,14 +145,13 @@ void Network::run() {
 				<< t - last_avalanche << '\t'
 				<< duration << '\t'
 				<< depol_sum << '\t'
-				<< num_active << endl;
+				<< num_active << '\t'
+				<< is_down << endl;
 			last_avalanche = t;
 			avalanches++;
 		}
 		nnoise(neuron, neurons);
 	}
-
-	cerr << (double) down / avalanches << endl;
 
 	delete[] active;
 	delete[] depol;
