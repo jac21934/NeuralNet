@@ -76,7 +76,7 @@ void NetworkParams::parse_file(ifstream &inFile) {
 
 			normal_distribution<double> dist(mean, stdev);
 
-			nnoise = bind(neuron_noise<normal_distribution<double>, RNG>, placeholders::_1, placeholders::_2, dist, g);
+			nnoise = bind(neuron_noise<normal_distribution<double>, RNG>, placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4, dist, g);
 		} else if (input.substr(1, 13) == "WEIGHT_NOISE:") {
 			size_t comma = input.find(',');
 			double mean = atof(input.substr(14, comma - 14).c_str());

@@ -2,7 +2,7 @@ Number of neurons
 #NET_SIZE: 1000
 
 What constitutes a neuron firing
-#FIRE_THRESHOLD: 1
+#FIRE_THRESHOLD: 6
 
 Controls neuron decrease in down state transition
 #DISFACILITATION: 0.02
@@ -14,7 +14,7 @@ Total number of simulation steps
 #MAX_TURNS: 1000000
 
 How much should neurons be poked between avalanches?
-#NEURON_NOISE: 0.03, 0.017
+#NEURON_NOISE: 0.02, 0
 
 How much should weights be poked between avalanches?
 #WEIGHT_NOISE: 0, 0.01
