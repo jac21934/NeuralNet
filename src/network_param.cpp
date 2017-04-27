@@ -58,7 +58,7 @@ void NetworkParams::parse_file(ifstream &inFile) {
 
 			power_law_distribution<int> dist(min(2, size - 1), min(100, size - 1), lambda);
 
-			builder = bind(random_connectome<power_law_distribution<int>, RNG>, placeholders::_1, placeholders::_2, inhibit, dist, g);
+			builder = bind(random_connectome<power_law_distribution<int>, RNG>, placeholders::_1, placeholders::_2, placeholders::_3, inhibit, dist, g);
 
 		} else if (input.substr(1, 11) == "OUT_DEGREE:") {
 			size_t comma = input.find(',');
@@ -67,7 +67,7 @@ void NetworkParams::parse_file(ifstream &inFile) {
 
 			uniform_int_distribution<int> dist(out_degree, out_degree);
 
-			builder = bind(random_connectome<uniform_int_distribution<int>, RNG>, placeholders::_1, placeholders::_2, inhibit, dist, g);
+			builder = bind(random_connectome<uniform_int_distribution<int>, RNG>, placeholders::_1, placeholders::_2, placeholders::_3, inhibit, dist, g);
 
 		} else if (input.substr(1, 13) == "NEURON_NOISE:") {
 			size_t comma = input.find(',');

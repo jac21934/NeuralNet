@@ -13,7 +13,7 @@ void null_connectome(double **weights, int size) {
 }
 
 template <class distribution, class URNG>
-void random_connectome(double **weights, int size, double inhibitory_fraction, distribution out_dist, URNG &g) {
+void random_connectome(double **weights, int *character, int size, double inhibitory_fraction, distribution out_dist, URNG &g) {
 	null_connectome(weights, size);
 
 	std::bernoulli_distribution inhibit(inhibitory_fraction);
@@ -21,13 +21,14 @@ void random_connectome(double **weights, int size, double inhibitory_fraction, d
 	std::uniform_int_distribution<int> neuron_dist(0, size - 1);
 
 	for (int i = 0; i < size; i++) {
-		int sign = inhibit(g) ? -1 : 1;
+		character[i] = inhibit(g) ? -1 : 1;
+
 		int remaining = out_dist(g);
 
 		while (remaining > 0) {
 			int j = neuron_dist(g);
-			if (i != j && std::abs(weights[i][j]) < MIN_RES) {
-				weights[i][j] = weight_dist(g) * sign;
+			if (i != j && weights[i][j] < MIN_RES) {
+				weights[i][j] = weight_dist(g);
 				remaining--;
 			}
 		}

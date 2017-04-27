@@ -12,7 +12,7 @@ typedef std::mt19937 RNG;
 
 typedef std::function<void(double *, int, bool, double)> neuron_noise_gen;
 typedef std::function<void(double **, int)> weight_noise_gen;
-typedef std::function<void(double **, int)> connectome_builder;
+typedef std::function<void(double **, int*, int)> connectome_builder;
 
 class NetworkParams {
 public:

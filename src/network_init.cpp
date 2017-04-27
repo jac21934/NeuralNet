@@ -16,15 +16,16 @@ Network::Network(NetworkParams &params) {
 	wnoise = params.wnoise;
 
 	neuron = new double[neurons];
+	character = new int[neurons];
 	out_degree = new int[neurons]();
 	in_degree = new int[neurons]();
 	refractory = new bool[neurons]();
 
 	weight = new double*[neurons];
 	for (int i = 0; i < neurons; i++)
-		weight[i] = new double[neurons + 1]();
+		weight[i] = new double[neurons + 1];
 
-	params.builder(weight, neurons);
+	params.builder(weight, character, neurons);
 
 	for (int i = 0; i < neurons; i++) {
 		neuron[i] = 0.9 * fire_threshold;
@@ -41,5 +42,6 @@ Network::~Network(void) {
 	delete[] refractory;
 	delete[] in_degree;
 	delete[] out_degree;
+	delete[] character;
 	delete[] neuron;
 }

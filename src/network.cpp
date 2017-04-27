@@ -46,8 +46,8 @@ void Network::run() {
 					active[i] = true;
 
 					for (int j = 0; j < neurons; j++) {
-						if (abs(weight[i][j]) > MIN_RES && !refractory_last[j]) {
-							double delta = neuron_last[i] * out_degree[i] * weight[i][j] / in_degree[j] / weight[i][neurons];
+						if (weight[i][j] > MIN_RES && !refractory_last[j]) {
+							double delta = neuron_last[i] * out_degree[i] * weight[i][j] * character[i] / in_degree[j] / weight[i][neurons];
 
 							neuron[j] += delta;
 							if (!keep_going && neuron[j] > fire_threshold)
@@ -89,10 +89,7 @@ void Network::run() {
 				depol_sum += depol[i];
 
 				for (int j = 0; j < neurons; j++) {
-					if (weight[i][j] < 0)
-						weight[i][j] -= depol[j] / fire_threshold;
-					else
-						weight[i][j] += depol[j] / fire_threshold;
+					weight[i][j] += depol[j] / fire_threshold;
 					net_weight_increase += depol[j] / fire_threshold;
 				}
 			}
@@ -101,11 +98,7 @@ void Network::run() {
 
 			for (int i = 0; i < neurons; i++) {
 				for (int j = 0; j < neurons; j++) {
-					double delta = min(net_weight_increase / bond_number, abs(weight[i][j]));
-					if (weight[i][j] < 0)
-						weight[i][j] += delta;
-					else
-						weight[i][j] -= delta;
+					weight[i][j] -= net_weight_increase / bond_number;
 				}
 			}
 
@@ -171,11 +164,13 @@ void Network::normalize_and_recount(void) {
 		out_degree[i] = 0;
 		double weight_sum = 0;
 		for (int j = 0; j < neurons; j++) {
-			if (abs(weight[i][j]) > MIN_RES) {
+			if (weight[i][j] < 0) {
+				weight[i][j] = 0;
+			} else if (weight[i][j] > MIN_RES) {
 				out_degree[i]++;
 				in_degree[j]++;
 				bond_number++;
-				weight_sum += abs(weight[i][j]);
+				weight_sum += weight[i][j];
 			}
 		}
 		weight[i][neurons] = weight_sum;
