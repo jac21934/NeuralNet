@@ -107,6 +107,8 @@ void Network::run() {
 
 			normalize_and_recount();
 
+			bool was_up = is_up;
+
 			// Up/down state transition
 			if (depol_sum > transition) {
 				// down state
@@ -140,7 +142,7 @@ void Network::run() {
 				<< duration << '\t'
 				<< depol_sum << '\t'
 				<< num_active << '\t'
-				<< is_up << endl;
+				<< was_up << endl;
 			last_avalanche = t;
 			avalanches++;
 		}
