@@ -1,6 +1,6 @@
 import sys
 
-binning = 0.5
+binning = 1
 
 final_dist = {}
 files = 0
