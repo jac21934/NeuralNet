@@ -9,7 +9,7 @@ using namespace std;
 
 Network::Network(NetworkParams &params) {
 	neurons = params.size;
-	max_turns = params.max_turns;
+	avalanches = params.avalanches;
 	fire_threshold = params.fire_threshold;
 	transition = params.transition;
 	nnoise = params.nnoise;

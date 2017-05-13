@@ -12,7 +12,7 @@ using namespace std;
 
 NetworkParams::NetworkParams(const string &filename, RNG &g): g(g) {
 	size = 0;
-	max_turns = 0;
+	avalanches = 0;
 	fire_threshold = 0;
 	disfacilitation = 0;
 	transition = 0;
@@ -39,8 +39,8 @@ void NetworkParams::parse_file(ifstream &inFile) {
 		if (input.substr(1, 9) == "NET_SIZE:") {
 			size = atoi(input.substr(10).c_str());
 
-		} else if (input.substr(1, 10) == "MAX_TURNS:") {
-			max_turns = atoi(input.substr(11).c_str());
+		} else if (input.substr(1, 11) == "AVALANCHES:") {
+			avalanches = atoi(input.substr(12).c_str());
 
 		} else if (input.substr(1, 15) == "FIRE_THRESHOLD:") {
 			fire_threshold = atof(input.substr(16).c_str());
@@ -85,6 +85,8 @@ void NetworkParams::parse_file(ifstream &inFile) {
 			normal_distribution<double> dist(mean, stdev);
 
 			wnoise = bind(weight_noise<normal_distribution<double>, RNG>, placeholders::_1, placeholders::_2, dist, g);
+		} else {
+			cerr << "Error: Unrecognized option " << input << endl;
 		}
 	}
 }

@@ -24,7 +24,7 @@ private:
 
 	RNG &g;
 	int size;
-	int max_turns;
+	int avalanches;
 	double fire_threshold;
 	double disfacilitation;
 	double transition;

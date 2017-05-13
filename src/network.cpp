@@ -14,12 +14,11 @@ void Network::run() {
 	double *depol = new double[neurons];
 	bool *active = new bool[neurons];
 
-	int last_avalanche = 0;
-	int avalanches = 0;
+	int wait_time = 1;
 	bool is_up = false;
 	double depol_sum = 0;
 
-	for (int t = 0; t < max_turns; t++) {
+	while (avalanches > 0) {
 		int duration = 0;
 
 		memset(depol, 0, neurons * sizeof(double));
@@ -138,13 +137,16 @@ void Network::run() {
 			}
 			cout << (double) bond_number / neurons / neurons << '\t'
 				<< weight_sum << '\t'
-				<< t - last_avalanche << '\t'
+				<< wait_time << '\t'
 				<< duration << '\t'
 				<< depol_sum << '\t'
 				<< num_active << '\t'
 				<< was_up << endl;
-			last_avalanche = t;
-			avalanches++;
+
+			wait_time = 1;
+			avalanches--;
+		} else {
+			wait_time++;
 		}
 		nnoise(neuron, neurons, is_up, transition / depol_sum);
 	}
