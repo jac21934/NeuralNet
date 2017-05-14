@@ -2,9 +2,6 @@ import sys
 
 binning = 1
 
-final_dist = {}
-files = 0
-
 file_list = sys.argv[1:]
 field = 2
 
@@ -14,12 +11,11 @@ try:
 except ValueError:
 	pass
 
+count = 0
+hist = {}
 for file in file_list:
-	files = files + 1
 	data = open(file, "r")
 
-	count = 0
-	hist = {}
 	for line in data:
 		i = int(float(line.split()[field]) / binning)
 		
@@ -31,11 +27,5 @@ for file in file_list:
 			hist[i] = 1
 	data.close()
 
-	for i in hist:
-		try:
-			final_dist[i] = final_dist[i] + float(hist[i]) / count
-		except KeyError:
-			final_dist[i] = float(hist[i]) / count
-
-for i in final_dist:
-	print binning * i, float(final_dist[i]) / files
+for i in hist:
+	print binning * i, float(hist[i]) / count
