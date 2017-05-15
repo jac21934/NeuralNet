@@ -86,7 +86,7 @@ void NetworkParams::parse_file(ifstream &inFile) {
 
 			wnoise = bind(weight_noise<normal_distribution<double>, RNG>, placeholders::_1, placeholders::_2, dist, g);
 		} else {
-			cerr << "Error: Unrecognized option " << input << endl;
+			throw runtime_error("Unrecognized option \"" + input + "\"");
 		}
 	}
 }
