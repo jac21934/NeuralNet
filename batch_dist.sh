@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CLEANUP=false
+CLEANUP=true
 
 DISTGEN="/home/bth8/Desktop/Code/Neural nets/net/prob.py"
 PLOTGEN="/home/bth8/Desktop/Code/Neural nets/net/plot.py"

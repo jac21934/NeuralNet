@@ -6,7 +6,7 @@
 #include <random>
 #include <functional>
 
-#define MIN_RES 0.0000001
+#define MIN_RES 0.0001
 
 typedef std::mt19937 RNG;
 

@@ -1,6 +1,7 @@
 import sys
+import math
 
-binning = 1
+binning = 1.0 / 30
 
 file_list = sys.argv[1:]
 field = 2
@@ -17,7 +18,13 @@ for file in file_list:
 	data = open(file, "r")
 
 	for line in data:
-		i = int(float(line.split()[field]) / binning)
+		raw = float(line.split()[field])
+		if raw == 0:
+			continue
+		try:
+			i = int(math.log10(raw) / binning)
+		except ValueError:
+			raise ValueError("Error: file %s field %d line %s" % (file, field, line))
 		
 		count = count + 1
 
@@ -28,4 +35,4 @@ for file in file_list:
 	data.close()
 
 for i in hist:
-	print binning * i, float(hist[i]) / count
+	print 10**(binning * i), float(hist[i]) / count
