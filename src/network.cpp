@@ -11,8 +11,12 @@ using namespace std;
 void Network::run() {
 	double *neuron_last = new double[neurons];
 	bool *refractory_last = new bool[neurons];
-	double *depol = new double[neurons];
 	bool *active = new bool[neurons];
+
+	double **depol = new double*[neurons];
+	for (int i = 0; i < neurons; i++) {
+		depol[i] = new double[neurons];
+	}
 
 	int wait_time = 1;
 	bool is_up = false;
@@ -21,7 +25,9 @@ void Network::run() {
 	while (avalanches > 0) {
 		int duration = 0;
 
-		memset(depol, 0, neurons * sizeof(double));
+		for (int i = 0; i < neurons; i++) {
+			memset(depol[i], 0, neurons * sizeof(double));
+		}
 		memset(active, false, neurons * sizeof(bool));
 
 		// Avalanche
@@ -40,21 +46,21 @@ void Network::run() {
 					refractory[i] = false;
 					neuron[i] = 0;
 				} else if (neuron_last[i] > fire_threshold) {
-					avalanche = true;
 					refractory[i] = true;
 					active[i] = true;
 
 					for (int j = 0; j < neurons; j++) {
 						if (weight[i][j] > MIN_RES && !refractory_last[j]) {
+							avalanche = true;
 							double delta = neuron_last[i] * out_degree[i] * weight[i][j] * character[i] / in_degree[j] / weight[i][neurons];
 
 							neuron[j] += delta;
 							if (!keep_going && neuron[j] > fire_threshold)
 								keep_going = true;
 
-							depol[j] += abs(delta);
+							depol[i][j] += abs(delta);
 
-							if (!isfinite(delta) || !isfinite(depol[j])) {
+							if (!isfinite(delta) || !isfinite(depol[i][j])) {
 								cerr << "Something's gone wrong!" << endl;
 
 								cerr << "neuron_last[" << i << "]: " << neuron_last[i] << endl;
@@ -72,7 +78,8 @@ void Network::run() {
 								cerr << "delta: " << delta << endl;
 								cerr << "weight[" << i << "][" << j << "]: " << weight[i][j] << endl;
 								cerr << "weight sum: " << weight[i][neurons] << endl;
-								cerr << "depol[" << j << "]: " << depol[j] << endl;
+								cerr << "depol[" << i << "][" << j << "]: " << depol[i][j] << endl;
+
 								exit(-1);
 							}
 						}
@@ -85,11 +92,16 @@ void Network::run() {
 			depol_sum = 0;
 			double net_weight_increase = 0;
 			for (int i = 0; i < neurons; i++) {
-				depol_sum += depol[i];
-
 				for (int j = 0; j < neurons; j++) {
-					weight[i][j] += depol[j] / fire_threshold;
-					net_weight_increase += depol[j] / fire_threshold;
+					depol_sum += depol[i][j];
+
+					weight[i][j] += depol[i][j] / fire_threshold;
+					net_weight_increase += depol[i][j] / fire_threshold;
+
+					// Preemptive down state setting. Overwritten if we go to up state instead
+					if (active[j]) {
+						neuron[j] -= disfacilitation * depol[i][j];
+					}
 				}
 			}
 
@@ -109,17 +121,7 @@ void Network::run() {
 			bool was_up = is_up;
 
 			// Up/down state transition
-			if (depol_sum > transition) {
-				// down state
-				is_up = false;
-				for (int i = 0; i < neurons; i++) {
-					if (active[i]) {
-						neuron[i] -= disfacilitation * depol[i];
-					}
-				}
-			} else {
-				// up state
-				is_up = true;
+			if ((is_up = (depol_sum <= transition))) {
 				for (int i = 0; i < neurons; i++) {
 					if (active[i]) {
 						neuron[i] = fire_threshold * (1 - depol_sum / transition);
@@ -151,8 +153,12 @@ void Network::run() {
 		nnoise(neuron, neurons, is_up, transition / depol_sum);
 	}
 
-	delete[] active;
+	for (int i = 0; i < neurons; i++) {
+		delete[] depol[i];
+	}
 	delete[] depol;
+
+	delete[] active;
 	delete[] refractory_last;
 	delete[] neuron_last;
 }

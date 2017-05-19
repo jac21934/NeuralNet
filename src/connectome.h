@@ -17,7 +17,7 @@ void random_connectome(double **weights, int *character, int size, double inhibi
 	null_connectome(weights, size);
 
 	std::bernoulli_distribution inhibit(inhibitory_fraction);
-	std::uniform_real_distribution<double> weight_dist(MIN_RES, 1.0);
+	std::uniform_real_distribution<double> weight_dist(0.5, 1.0);
 	std::uniform_int_distribution<int> neuron_dist(0, size - 1);
 
 	for (int i = 0; i < size; i++) {
