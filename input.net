@@ -19,8 +19,8 @@ How much should neurons be poked in a down state?
 How much should weights be poked between avalanches?
 #WEIGHT_NOISE: 0, 0
 
-Attaches nodes so as to create a scale free network of given exponent, inhibitory fraction
-#LAMBDA: 2, 0.1
+Attaches nodes so as to create a scale free network of given exponent, inhibitory fraction, and output fraction
+#LAMBDA: 2, 0.1, 0.1
 
 Attaches nodes at random with uniform out degree
 OUT_DEGREE: 2, 0.1

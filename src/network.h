@@ -19,6 +19,7 @@ private:
 	double **weight;
 	double *neuron;
 	int *character;
+	bool *is_out;
 	bool *refractory;
 	int *out_degree;
 	int *in_degree;

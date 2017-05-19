@@ -45,13 +45,15 @@ void Network::run() {
 				if (refractory_last[i]) {
 					refractory[i] = false;
 					neuron[i] = 0;
+				} else if (is_out[i] || out_degree[i] == 0) {
+					neuron[i] = 0;
 				} else if (neuron_last[i] > fire_threshold) {
+					avalanche = true;
 					refractory[i] = true;
 					active[i] = true;
 
 					for (int j = 0; j < neurons; j++) {
 						if (weight[i][j] > MIN_RES && !refractory_last[j]) {
-							avalanche = true;
 							double delta = neuron_last[i] * out_degree[i] * weight[i][j] * character[i] / in_degree[j] / weight[i][neurons];
 
 							neuron[j] += delta;

@@ -17,6 +17,7 @@ Network::Network(NetworkParams &params) {
 
 	neuron = new double[neurons];
 	character = new int[neurons];
+	is_out = new bool[neurons]();
 	out_degree = new int[neurons]();
 	in_degree = new int[neurons]();
 	refractory = new bool[neurons]();
@@ -25,7 +26,7 @@ Network::Network(NetworkParams &params) {
 	for (int i = 0; i < neurons; i++)
 		weight[i] = new double[neurons + 1];
 
-	params.builder(weight, character, neurons);
+	params.builder(weight, character, is_out, neurons);
 
 	for (int i = 0; i < neurons; i++) {
 		neuron[i] = 0.9 * fire_threshold;
@@ -42,6 +43,7 @@ Network::~Network(void) {
 	delete[] refractory;
 	delete[] in_degree;
 	delete[] out_degree;
+	delete[] is_out;
 	delete[] character;
 	delete[] neuron;
 }
