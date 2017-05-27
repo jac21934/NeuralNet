@@ -14,6 +14,7 @@ Network::Network(NetworkParams &params) {
 	transition = params.transition;
 	nnoise = params.nnoise;
 	wnoise = params.wnoise;
+	disfacilitation = params.disfacilitation;
 
 	neuron = new double[neurons];
 	character = new int[neurons];
