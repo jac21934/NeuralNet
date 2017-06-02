@@ -5,12 +5,13 @@ TARGET		= net
 CXX			= g++
 RM			= rm -f
 
-CPPFLAGS	= -MD -Wall -Werror -std=c++11
+CPPFLAGS	= -MD -Wall -Werror -Weffc++ -std=c++11
 CXXFLAGS	= -O3
 LDFLAGS		=
 LDLIBS		=
 
-SRCFILES =  network_param.cpp network_init.cpp main.cpp network.cpp
+SRCFILES = neuron.cpp synapse.cpp network.cpp main.cpp noise.cpp \
+	network_param.cpp connectome.cpp
 SRCDIR = src/
 SRCS = $(addprefix $(SRCDIR), $(SRCFILES))
 OBJS = $(SRCS:.cpp=.o)

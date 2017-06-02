@@ -14,13 +14,18 @@ Total number of data points
 #AVALANCHES: 25000
 
 How much should neurons be poked in a down state?
-#NEURON_NOISE: 0.02, 0
+#NEURON_NOISE_MEAN: 0.02
+#NEURON_NOISE_STDEV: 0
 
 How much should weights be poked between avalanches?
-#WEIGHT_NOISE: 0, 0
+#WEIGHT_NOISE_MEAN: 0
+#WEIGHT_NOISE_STDEV: 0
 
-Attaches nodes so as to create a scale free network of given exponent, inhibitory fraction, and output fraction
-#LAMBDA: 2, 0.1, 0.1
+Out degree distribution exponent
+#EXPONENT: 2
 
-Attaches nodes at random with uniform out degree
-OUT_DEGREE: 2, 0.1
+Fraction of neurons which will be inhibitory
+#INHIBITORY: 0.1
+
+Fraction of neurons which will be output neurons (won't send charge to other neurons in the network
+#OUTPUT: 0.1

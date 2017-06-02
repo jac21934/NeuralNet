@@ -3,17 +3,17 @@
 
 #include <string>
 #include <fstream>
-#include <random>
 #include <functional>
+#include <vector>
+#include <memory>
 
-#define MIN_RES 0.0001
+#include "connectome.h"
+#include "neuron.h"
+#include "noise.h"
 
-typedef std::mt19937 RNG;
-
-typedef std::function<void(double *, int, bool, double)> neuron_noise_gen;
-typedef std::function<void(double **, int)> weight_noise_gen;
-typedef std::function<void(double **, int*, bool*, int)> connectome_builder;
-
+/**
+ * Contains a number of parameters and objects used by Networks.
+ */
 class NetworkParams {
 public:
 	friend class Network;
@@ -27,10 +27,18 @@ private:
 	int avalanches;
 	double fire_threshold;
 	double disfacilitation;
+	double inhibitory_fraction;
+	double output_fraction;
+	double exponent;
 	double transition;
-	connectome_builder builder;
-	neuron_noise_gen nnoise;
-	weight_noise_gen wnoise;
+	double nnoise_mean;
+	double nnoise_stdev;
+	double wnoise_mean;
+	double wnoise_stdev;
+
+	std::shared_ptr<ConnectomeBuilder> builder;
+	std::shared_ptr<NeuronNoise> nnoise;
+	std::shared_ptr<WeightNoise> wnoise;
 };
 
 #endif /*NETWORK_PARAM_H*/

@@ -1,27 +1,40 @@
 #ifndef NOISE_H
 #define NOISE_H
 
+#include <vector>
 #include <random>
 
-template<class distribution, class URNG>
-void neuron_noise(double *neurons, int size, bool is_up, double up_range, distribution &noise_down_dist, URNG &g) {
-	std::uniform_int_distribution<int> neuron_dist(0, size - 1);
+#include "neuron.h"
 
-	if (is_up) {
-		std::uniform_real_distribution<double> up_dist(0, up_range);
-		neurons[neuron_dist(g)] += up_dist(g);
-	} else {
-		neurons[neuron_dist(g)] += noise_down_dist(g);
-	}
-}
+typedef std::mt19937 RNG;
 
-template<class distribution, class URNG>
-void weight_noise(double **weights, int size, distribution &noise_dist, URNG &g) {
-	std::uniform_int_distribution<int> neuron_dist(0, size - 1);
+/**
+ * Creates and injects noise into the potentials of Neurons in a Network.
+ */
+class NeuronNoise {
+public:
+	NeuronNoise(double mean, double stdev, RNG &g);
 
-	for (int i = 0; i < size; i++) {
-		weights[neuron_dist(g)][neuron_dist(g)] += noise_dist(g);
-	}
-}
+	void operator()(std::vector<Neuron> &neurons, double range);
+	void operator()(std::vector<Neuron> &neurons);
+
+private:
+	RNG &g;
+	std::normal_distribution<double> down_dist;
+};
+
+/**
+ * Injects noise into the connection strengths between Neurons in a Network.
+ */
+class WeightNoise {
+public:
+	WeightNoise(double mean, double stdev, RNG &g);
+
+	void operator()(std::vector<Neuron> &neurons);
+
+private:
+	RNG &g;
+	std::normal_distribution<double> noise_dist;
+};
 
 #endif /*NOISE_H*/

@@ -1,38 +1,31 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
+#include <iostream>
+#include <memory>
+
+#include "neuron.h"
+#include "noise.h"
 #include "network_param.h"
 
 class Network {
 public:
-	// network_init.cpp
 	Network(NetworkParams &params);
-	~Network(void);
 
-	// network.cpp
-	void run();
-
+	void run(std::ostream &out);
 private:
-	// network.cpp
-	void normalize_and_recount(void);
+	std::vector<Neuron> neurons;
+	const int avalanches;
+	const double transition;
 
-	double **weight;
-	double *neuron;
-	int *character;
-	bool *is_out;
-	bool *refractory;
-	int *out_degree;
-	int *in_degree;
-	int bond_number;
+	bool ready_to_fire;
 
-	int neurons;
-	int avalanches;
-	double fire_threshold;
-	double disfacilitation;
-	double transition;
+	std::shared_ptr<NeuronNoise> nnoise;
+	std::shared_ptr<WeightNoise> wnoise;
 
-	neuron_noise_gen nnoise;
-	weight_noise_gen wnoise;
+	int apply_noise_until_ready(void);
+	int apply_noise_until_ready(double last_depol);
+	void neuron_callback(Neuron &n);
 };
 
 #endif /*NETWORK_H*/

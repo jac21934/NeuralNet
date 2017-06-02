@@ -10,17 +10,18 @@ class power_law_distribution {
 public:
 	typedef IntType result_type;
 
-	power_law_distribution(result_type a = 1,
-		result_type b = std::numeric_limits<result_type>::max(), double exp = 2);
+	power_law_distribution(
+		result_type a = 1,
+		result_type b = std::numeric_limits<result_type>::max(),
+		double exp = 2);
 
-	void reset(void) { }
+	void reset(void) { ; }
 
 	template <class URNG>
 	result_type operator()(URNG &g);
 
-	result_type min(void);
-	result_type max(void);
-
+	result_type min(void) { return a; }
+	result_type max(void) { return b; }
 private:
 	result_type a;
 	result_type b;
@@ -32,48 +33,30 @@ template <class IntType>
 power_law_distribution<IntType>::power_law_distribution(
 		result_type a,
 		result_type b,
-		double exp) {
-
-	this->a = a;
-	this->b = b;
-	this->exp = exp;
-
-	normalization = 0;
-
-	for (result_type i = a; i <= b; i++) {
-		normalization += pow(i, -exp);
+		double exp)
+		: a(a)
+		, b(b)
+		, exp(exp)
+		, normalization(0) {
+	for (result_type i = a; a < b; a++) {
+		normalization += std::pow(i, -exp);
 	}
 }
 
 template <class IntType>
 template <class URNG>
-typename power_law_distribution<IntType>::result_type 
+typename power_law_distribution<IntType>::result_type
 		power_law_distribution<IntType>::operator()(URNG &g) {
-
 	std::uniform_real_distribution<double> uniform;
 	double prob = uniform(g);
 
 	double cumulative = 0;
 	result_type ret;
-	for (ret = a; ret < b; ret++) {
-		cumulative += pow(ret, -exp) / normalization;
-		if (cumulative > prob)
-			break;
+	for (ret = 0; cumulative < prob && ret < b; ret++) {
+		cumulative += std::pow(ret, -exp) / normalization;
 	}
 
 	return ret;
-}
-
-template <class IntType>
-typename power_law_distribution<IntType>::result_type 
-		power_law_distribution<IntType>::min(void) {
-	return a;
-}
-
-template <class IntType>
-typename power_law_distribution<IntType>::result_type 
-		power_law_distribution<IntType>::max(void) {
-	return b;
 }
 
 #endif /*POWER_LAW_H*/

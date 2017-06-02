@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
 
 	Network net(params);
 
-	net.run();
+	net.run(cout);
 
 	return 0;
 }

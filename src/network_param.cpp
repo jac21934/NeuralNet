@@ -1,25 +1,32 @@
-#include <fstream>
-#include <string>
-#include <functional>
-#include <iostream>
+#include <cmath>
 
 #include "network_param.h"
-#include "power_law.h"
-#include "connectome.h"
-#include "noise.h"
 
 using namespace std;
 
-NetworkParams::NetworkParams(const string &filename, RNG &g): g(g) {
-	size = 0;
-	avalanches = 0;
-	fire_threshold = 0;
-	disfacilitation = 0;
-	transition = 0;
-	builder = NULL;
-	nnoise = NULL;
-	wnoise = NULL;
-
+/**
+ * Creates a new NetworkParams object by parsing a configuration file
+ *
+ * @param filename The name of the configuration file
+ * @param g The RNG to act as the source of randomness for all network purposes
+ */
+NetworkParams::NetworkParams(const string &filename, RNG &g)
+		: g(g)
+		, size(0)
+		, avalanches(0)
+		, fire_threshold(0)
+		, disfacilitation(0)
+		, inhibitory_fraction(0)
+		, output_fraction(0)
+		, exponent(0)
+		, transition(0)
+		, nnoise_mean(0)
+		, nnoise_stdev(0)
+		, wnoise_mean(0)
+		, wnoise_stdev(0)
+		, builder()
+		, nnoise()
+		, wnoise() {
 	ifstream inFile(filename.c_str());
 
 	if (!inFile)
@@ -29,68 +36,70 @@ NetworkParams::NetworkParams(const string &filename, RNG &g): g(g) {
 		parse_file(inFile);
 
 	inFile.close();
+
+	builder = make_shared<ConnectomeBuilder>(size, fire_threshold,
+		disfacilitation, inhibitory_fraction, output_fraction, exponent, g);
+	nnoise = make_shared<NeuronNoise>(nnoise_mean, nnoise_stdev, g);
+	wnoise = make_shared<WeightNoise>(wnoise_mean, wnoise_stdev, g);
 }
 
+/**
+ * Extracts the value of the given parameter from a single line from the
+ * configuration file. If the line in question does not contain a setting for
+ * the desired parameter, NaN is returned.
+ *
+ * @param line The line of text being searched for the desired parameter
+ * @param parameter The parameter being searched for
+ * @return The value to which the parameter was set if present, NaN otherwise
+ */
+static double get_parameter(string line, string parameter) {
+	double ret = NAN;
+
+	if (line.substr(1, parameter.length() + 1) == parameter + ":")
+		ret = atof(line.substr(parameter.length() + 2).c_str());
+
+	return ret;
+}
+
+/**
+ * Populates a number of member variables with values found in the passed file.
+ *
+ * @param inFile File from which configuration values will be read
+ * @todo A more elegant parser would be nice
+ */
 void NetworkParams::parse_file(ifstream &inFile) {
-	string input;
-	getline(inFile, input);
+	string line;
+	getline(inFile, line);
 
-	if (input[0] == '#') {
-		if (input.substr(1, 9) == "NET_SIZE:") {
-			size = atoi(input.substr(10).c_str());
+	if(line[0] != '#')
+		return;
 
-		} else if (input.substr(1, 11) == "AVALANCHES:") {
-			avalanches = atoi(input.substr(12).c_str());
-
-		} else if (input.substr(1, 15) == "FIRE_THRESHOLD:") {
-			fire_threshold = atof(input.substr(16).c_str());
-
-		} else if (input.substr(1, 16) == "DISFACILITATION:") {
-			disfacilitation = atof(input.substr(17).c_str());
-
-		} else if (input.substr(1, 21) == "TRANSITION_THRESHOLD:") {
-			transition = atof(input.substr(22).c_str());
-
-		} else if (input.substr(1, 7) == "LAMBDA:") {
-			size_t comma1 = input.find(',');
-			size_t comma2 = input.find(',', comma1 + 1);
-			double lambda = atof(input.substr(8, comma1 - 8).c_str());
-			double inhibit = atof(input.substr(comma1 + 1, comma2 - (comma1 + 1)).c_str());
-			double output = atof(input.substr(comma2 + 1).c_str());
-
-			power_law_distribution<int> dist(min(2, size - 1), min(100, size - 1), lambda);
-
-			builder = bind(random_connectome<power_law_distribution<int>, RNG>, placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4, inhibit, output, dist, g);
-
-		} else if (input.substr(1, 11) == "OUT_DEGREE:") {
-			size_t comma1 = input.find(',');
-			size_t comma2 = input.find(',', comma1 + 1);
-			int out_degree = atoi(input.substr(12, comma1 - 12).c_str());
-			double inhibit = atof(input.substr(comma1 + 1, comma2 - comma1 - 1).c_str());
-			double output = atof(input.substr(comma2 + 1).c_str());
-
-			uniform_int_distribution<int> dist(out_degree, out_degree);
-
-			builder = bind(random_connectome<uniform_int_distribution<int>, RNG>, placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4, inhibit, output, dist, g);
-
-		} else if (input.substr(1, 13) == "NEURON_NOISE:") {
-			size_t comma = input.find(',');
-			double mean = atof(input.substr(14, comma - 14).c_str());
-			double stdev = atof(input.substr(comma + 1).c_str());
-
-			normal_distribution<double> dist(mean, stdev);
-
-			nnoise = bind(neuron_noise<normal_distribution<double>, RNG>, placeholders::_1, placeholders::_2, placeholders::_3, placeholders::_4, dist, g);
-		} else if (input.substr(1, 13) == "WEIGHT_NOISE:") {
-			size_t comma = input.find(',');
-			double mean = atof(input.substr(14, comma - 14).c_str());
-			double stdev = atof(input.substr(comma + 1).c_str());
-
-			normal_distribution<double> dist(mean, stdev);
-
-			wnoise = bind(weight_noise<normal_distribution<double>, RNG>, placeholders::_1, placeholders::_2, dist, g);
-		} else {
-			throw runtime_error("Unrecognized option \"" + input + "\"");
-		}
+	double value;
+	if (!isnan(value = get_parameter(line, "NET_SIZE"))) {
+		size = value;
+	} else if (!isnan(value = get_parameter(line, "FIRE_THRESHOLD"))) {
+		fire_threshold = value;
+	} else if (!isnan(value = get_parameter(line, "DISFACILITATION"))) {
+		disfacilitation = value;
+	} else if (!isnan(value = get_parameter(line, "TRANSITION_THRESHOLD"))) {
+		transition = value;
+	} else if (!isnan(value = get_parameter(line, "AVALANCHES"))) {
+		avalanches = value;
+	} else if (!isnan(value = get_parameter(line, "NEURON_NOISE_MEAN"))) {
+		nnoise_mean = value;
+	} else if (!isnan(value = get_parameter(line, "NEURON_NOISE_STDEV"))) {
+		nnoise_stdev = value;
+	} else if (!isnan(value = get_parameter(line, "WEIGHT_NOISE_MEAN"))) {
+		wnoise_mean = value;
+	} else if (!isnan(value = get_parameter(line, "WEIGHT_NOISE_STDEV"))) {
+		wnoise_stdev = value;
+	} else if (!isnan(value = get_parameter(line, "EXPONENT"))) {
+		exponent = value;
+	} else if (!isnan(value = get_parameter(line, "INHIBITORY"))) {
+		inhibitory_fraction = value;
+	} else if (!isnan(value = get_parameter(line, "OUTPUT"))) {
+		output_fraction = value;
+	} else {
+		throw runtime_error("Unrecognized option: \"" + line + "\"");
 	}
 }

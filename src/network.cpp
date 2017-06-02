@@ -1,190 +1,114 @@
 #include <iostream>
-#include <cmath>
-#include <stdexcept>
-#include <cstring>
-#include <random>
+#include <functional>
 
 #include "network.h"
 
 using namespace std;
 
-void Network::run() {
-	double *neuron_last = new double[neurons];
-	bool *refractory_last = new bool[neurons];
-	bool *active = new bool[neurons];
-
-	double **depol = new double*[neurons];
-	for (int i = 0; i < neurons; i++) {
-		depol[i] = new double[neurons];
-	}
-
-	int wait_time = 1;
-	bool is_up = false;
-	double depol_sum = 0;
-
-	while (avalanches > 0) {
-		int duration = 0;
-
-		for (int i = 0; i < neurons; i++) {
-			memset(depol[i], 0, neurons * sizeof(double));
-		}
-		memset(active, false, neurons * sizeof(bool));
-
-		// Avalanche
-		bool keep_going;
-		bool avalanche = false;
-		do {
-			duration++;
-
-			memcpy(neuron_last, neuron, neurons * sizeof(double));
-			memcpy(refractory_last, refractory, neurons * sizeof(bool));
-
-			keep_going = false;
-			
-			for (int i = 0; i < neurons; i++) {
-				if (refractory_last[i]) {
-					refractory[i] = false;
-					neuron[i] = 0;
-				} else if (is_out[i] || out_degree[i] == 0) {
-					neuron[i] = 0;
-				} else if (neuron_last[i] > fire_threshold) {
-					avalanche = true;
-					refractory[i] = true;
-					active[i] = true;
-
-					for (int j = 0; j < neurons; j++) {
-						if (weight[i][j] > MIN_RES && !refractory_last[j]) {
-							double delta = neuron_last[i] * out_degree[i] * weight[i][j] * character[i] / in_degree[j] / weight[i][neurons];
-
-							neuron[j] += delta;
-							if (!keep_going && neuron[j] > fire_threshold)
-								keep_going = true;
-
-							depol[i][j] += abs(delta);
-
-							if (!isfinite(delta) || !isfinite(depol[i][j])) {
-								cerr << "Something's gone wrong!" << endl;
-
-								cerr << "neuron_last[" << i << "]: " << neuron_last[i] << endl;
-								cerr << "refractory_last[" << i << "]: " << refractory_last[i] << endl;
-								cerr << "neuron[" << i << "]: " << neuron[i] << endl;
-								cerr << "refractory[" << i << "]: " << refractory[i] << endl;
-
-								cerr << "neuron_last[" << j << "]: " << neuron_last[j] << endl;
-								cerr << "refractory_last[" << j << "]: " << refractory_last[j] << endl;
-								cerr << "neuron[" << j << "]: " << neuron[j] << endl;
-								cerr << "refractory[" << j << "]: " << refractory[j] << endl;
-
-								cerr << "out_degree[" << i << "]: " << out_degree[i] << endl;
-								cerr << "in_degree[" << j << "]: " << in_degree[j] << endl;
-								cerr << "delta: " << delta << endl;
-								cerr << "weight[" << i << "][" << j << "]: " << weight[i][j] << endl;
-								cerr << "weight sum: " << weight[i][neurons] << endl;
-								cerr << "depol[" << i << "][" << j << "]: " << depol[i][j] << endl;
-
-								exit(-1);
-							}
-						}
-					}
-				}
-			}
-		} while (keep_going);
-
-		if (avalanche) {
-			depol_sum = 0;
-			double net_weight_increase = 0;
-			for (int i = 0; i < neurons; i++) {
-				for (int j = 0; j < neurons; j++) {
-					depol_sum += depol[i][j];
-
-					weight[i][j] += depol[i][j] / fire_threshold;
-					net_weight_increase += depol[i][j] / fire_threshold;
-
-					// Preemptive down state setting. Overwritten if we go to up state instead
-					if (active[j]) {
-						neuron[j] -= disfacilitation * depol[i][j];
-					}
-				}
-			}
-
-			normalize_and_recount();
-
-			for (int i = 0; i < neurons; i++) {
-				for (int j = 0; j < neurons; j++) {
-					weight[i][j] -= net_weight_increase / bond_number;
-				}
-			}
-
-			if (wnoise)
-				wnoise(weight, neurons);
-
-			normalize_and_recount();
-
-			bool was_up = is_up;
-
-			// Up/down state transition
-			if ((is_up = (depol_sum <= transition))) {
-				for (int i = 0; i < neurons; i++) {
-					if (active[i]) {
-						neuron[i] = fire_threshold * (1 - depol_sum / transition);
-					}
-				}
-			}
-
-			// Reporting
-			double weight_sum = 0;
-			double num_active = 0;
-			for (int i = 0; i < neurons; i++) {
-				weight_sum += weight[i][neurons];
-				if (active[i])
-					num_active++;
-			}
-			cout << (double) bond_number / neurons / neurons << '\t'
-				<< weight_sum << '\t'
-				<< wait_time << '\t'
-				<< duration << '\t'
-				<< depol_sum << '\t'
-				<< num_active << '\t'
-				<< was_up << endl;
-
-			wait_time = 1;
-			avalanches--;
-		} else {
-			wait_time++;
-		}
-		nnoise(neuron, neurons, is_up, transition / depol_sum);
-	}
-
-	for (int i = 0; i < neurons; i++) {
-		delete[] depol[i];
-	}
-	delete[] depol;
-
-	delete[] active;
-	delete[] refractory_last;
-	delete[] neuron_last;
+/**
+ * Creates a new Network. This isn't a great description, but what do you want
+ * from me?
+ *
+ * @param params NetworkParams object containing parameters for the Network
+ */
+Network::Network(NetworkParams &params)
+		: neurons()
+		, avalanches(params.avalanches)
+		, transition(params.transition)
+		, ready_to_fire(false)
+		, nnoise(params.nnoise)
+		, wnoise(params.wnoise) {
+	// Is this moral?
+	(*params.builder)(neurons,
+		bind(&Network::neuron_callback, this, placeholders::_1));
 }
 
-void Network::normalize_and_recount(void) {
-	bond_number = 0;
+/**
+ * Actually runs the simulation until the desired number of avalanches has
+ * occurred.
+ *
+ * @param out Stream to which avalanche information will be sent
+ */
+void Network::run(std::ostream &out) {
+	bool is_up = false;
+	double last_depol_sum = 0;
+	for (int i = 0; i < avalanches; i++) {
+		int wait_time = 0;
+		double depol_sum = 0;
+		int duration = 0;
+		while (depol_sum == 0) {
+			// Apply noise until we're ready to fire
+			for ( ; !ready_to_fire; wait_time++) {
+				if (is_up) {
+					(*nnoise)(neurons, transition / last_depol_sum);
+				} else {
+					(*nnoise)(neurons);
+				}
+			}
 
-	for (int j = 0; j < neurons; j++) {
-		in_degree[j] = 0;
-	}
+			// Avalanche time
+			for ( ; ready_to_fire; duration++) {
+				ready_to_fire = false;
 
-	for (int i = 0; i < neurons; i++) {
-		out_degree[i] = 0;
-		double weight_sum = 0;
-		for (int j = 0; j < neurons; j++) {
-			if (weight[i][j] < 0) {
-				weight[i][j] = 0;
-			} else if (weight[i][j] > MIN_RES) {
-				out_degree[i]++;
-				in_degree[j]++;
-				bond_number++;
-				weight_sum += weight[i][j];
+				// Reset all neuron to prepare for firings
+				for (auto it = neurons.begin(); it != neurons.end(); it++) {
+					it->reset();
+				}
+
+				for (auto it = neurons.begin(); it != neurons.end(); it++) {
+					depol_sum += std::fabs(it->time_step());
+				}
 			}
 		}
-		weight[i][neurons] = weight_sum;
+		last_depol_sum = depol_sum;
+
+		// Hebbian learning
+		double total_weight_increase = 0;
+		int pre_lower_bond_number = 0;
+		for (auto it = neurons.begin(); it != neurons.end(); it++) {
+			total_weight_increase += it->hebbian();
+			pre_lower_bond_number += it->get_out_degree();
+		}
+
+		// Homeostatic weight lowering and statistics collecting
+		int new_bond_number = 0;
+		double weight_sum = 0;
+		int active = 0;
+		for (auto it = neurons.begin(); it != neurons.end(); it++) {
+			weight_sum += it->strengthen_all_connections(
+				-1 * total_weight_increase / pre_lower_bond_number);
+			new_bond_number += it->get_out_degree();
+			if (it->was_active())
+				active++;
+		}
+
+		// Reporting
+		out << 1.0 * new_bond_number / neurons.size() / neurons.size() << '\t'
+			<< weight_sum << '\t'
+			<< wait_time << '\t'
+			<< duration << '\t'
+			<< depol_sum << '\t'
+			<< active << '\t'
+			<< is_up << endl;
+
+		// Up/down transition
+		is_up = (depol_sum <= transition);
+		for (auto it = neurons.begin(); it != neurons.end(); it++) {
+			if (is_up)
+				it->go_up(it->get_threshold() * (1 - depol_sum / transition));
+			else
+				it->go_down();
+		}
+
 	}
+}
+
+/**
+ * Called by constituent neurons when they're ready to fire.
+ *
+ * @param n Neuron which is ready to fire
+ * @see Neuron::Neuron(bool, bool, double, double, ready_callback)
+ */
+void Network::neuron_callback(Neuron &n) {
+	ready_to_fire = true;
 }
