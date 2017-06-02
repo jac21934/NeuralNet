@@ -35,6 +35,7 @@ ConnectomeBuilder::ConnectomeBuilder(
 		, inhibit(inhibitory_fraction)
 		, output(output_fraction)
 		, weight_dist(0, 1)
+		, neuron_dist(0, size - 1)
 		, out_dist(std::min(2, size - 1), std::min(100, size - 1), exponent) {
 	; // Nothing to see here
 }
@@ -68,8 +69,6 @@ void ConnectomeBuilder::operator()(
 		neurons.emplace_back(output(g), inhibit(g), 0.9 * fire_threshold,
 			fire_threshold, disfacilitation, callback);
 	}
-
-	uniform_int_distribution<int> neuron_dist(0, neurons.size());
 
 	for (auto it = neurons.begin(); it != neurons.end(); it++) {
 		int index = std::distance(neurons.begin(), it);

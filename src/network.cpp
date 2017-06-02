@@ -76,7 +76,7 @@ void Network::run(std::ostream &out) {
 		int active = 0;
 		for (auto it = neurons.begin(); it != neurons.end(); it++) {
 			weight_sum += it->strengthen_all_connections(
-				-1 * total_weight_increase / pre_lower_bond_number);
+				-total_weight_increase / pre_lower_bond_number);
 			new_bond_number += it->get_out_degree();
 			if (it->was_active())
 				active++;

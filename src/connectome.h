@@ -35,6 +35,7 @@ private:
 	std::bernoulli_distribution inhibit;
 	std::bernoulli_distribution output;
 	std::uniform_real_distribution<double> weight_dist;
+	std::uniform_int_distribution<int> neuron_dist;
 	power_law_distribution<int> out_dist;
 };
 
