@@ -24,7 +24,7 @@ condor: LDLIBS += dl-support.o
 condor: dl-support.o $(TARGET)
 
 debug: CPPFLAGS += -DDEBUG
-debug: CXXFLAGS += -g
+debug: CXXFLAGS += -g -O0
 debug: $(TARGET)
 
 $(TARGET): $(OBJS)

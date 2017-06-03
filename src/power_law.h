@@ -38,7 +38,7 @@ power_law_distribution<IntType>::power_law_distribution(
 		, b(b)
 		, exp(exp)
 		, normalization(0) {
-	for (result_type i = a; a < b; a++) {
+	for (result_type i = a; i < b; i++) {
 		normalization += std::pow(i, -exp);
 	}
 }
@@ -51,9 +51,12 @@ typename power_law_distribution<IntType>::result_type
 	double prob = uniform(g);
 
 	double cumulative = 0;
-	result_type ret;
-	for (ret = 0; cumulative < prob && ret < b; ret++) {
+	result_type ret = a;
+	while (ret < b) {
 		cumulative += std::pow(ret, -exp) / normalization;
+		if (cumulative > prob)
+			break;
+		ret++;
 	}
 
 	return ret;
