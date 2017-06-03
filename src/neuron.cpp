@@ -65,7 +65,7 @@ double Neuron::time_step(void) {
 		potential = 0;
 	} else if (potential_prev > threshold) {
 		for (auto it = synapses.begin(); it != synapses.end(); it++)
-			out_sum += it->second.fire(potential_prev, weight_sum);
+			out_sum += it->second.fire(potential_prev);
 
 		refractory = true;
 		active = true;
@@ -128,9 +128,8 @@ void Neuron::strengthen_connection(double delta, Neuron &target) {
  * as necessary.
  *
  * @param delta Amount by which to strengthen each connection
- * @return The sum of all weight strengths after updating
  */
-double Neuron::strengthen_all_connections(double delta) {
+void Neuron::strengthen_all_connections(double delta) {
 	auto it = synapses.begin();
 	while (it != synapses.end()) {
 		if (it->second.increase_strength(delta)) {
@@ -141,7 +140,14 @@ double Neuron::strengthen_all_connections(double delta) {
 	}
 
 	renormalize_weights();
+}
 
+/**
+ * Get the sum of the strengths of all outgoing connections.
+ *
+ * @return The sum of all outgoing synapse strengths
+ */
+double Neuron::get_weight_sum(void) const {
 	return weight_sum;
 }
 

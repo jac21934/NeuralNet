@@ -17,7 +17,7 @@ public:
 	~Synapse(void);
 
 	void reset(void);
-	double fire(double potential, double weight_sum);
+	double fire(double potential);
 	bool increase_strength(double delta);
 	double hebbian_increase(double rate);
 	double get_strength(void) const { return strength; }

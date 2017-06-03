@@ -33,7 +33,8 @@ public:
 	void reset(void);
 	double hebbian(double rate = 1);
 	void strengthen_connection(double delta, Neuron &target);
-	double strengthen_all_connections(double delta);
+	void strengthen_all_connections(double delta);
+	double get_weight_sum(void) const;
 	double get_connection_strength(Neuron &target) const;
 	void go_up(double potential);
 	void go_down();
