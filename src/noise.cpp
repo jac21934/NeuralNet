@@ -2,8 +2,6 @@
 
 #include "noise.h"
 
-using namespace std;
-
 /**
  * Creates a NeuronNoise object
  *
@@ -25,9 +23,9 @@ NeuronNoise::NeuronNoise(double mean, double stdev, RNG &g)
  * @param neurons Vector containing neurons to be stimulated
  * @param range Determines the range of possible stimulations
  */
-void NeuronNoise::operator()(vector<Neuron> &neurons, double range) {
-	uniform_int_distribution<int> neuron_dist(0, neurons.size() - 1);
-	uniform_real_distribution<double> noise_dist(0, range);
+void NeuronNoise::operator()(std::vector<Neuron> &neurons, double range) {
+	std::uniform_int_distribution<int> neuron_dist(0, neurons.size() - 1);
+	std::uniform_real_distribution<double> noise_dist(0, range);
 
 	neurons.at(neuron_dist(g)).increase_potential(noise_dist(g));
 }
@@ -40,8 +38,8 @@ void NeuronNoise::operator()(vector<Neuron> &neurons, double range) {
  * @param neurons Vector containing neurons to be stimulated
  * @see NeuronNoise::NeuronNoise(double, double, RNG)
  */
-void NeuronNoise::operator()(vector<Neuron> &neurons) {
-	uniform_int_distribution<int> neuron_dist(0, neurons.size() - 1);
+void NeuronNoise::operator()(std::vector<Neuron> &neurons) {
+	std::uniform_int_distribution<int> neuron_dist(0, neurons.size() - 1);
 
 	neurons.at(neuron_dist(g)).increase_potential(down_dist(g));
 }

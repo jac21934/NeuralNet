@@ -3,8 +3,6 @@
 
 #include "network.h"
 
-using namespace std;
-
 /**
  * Creates a new Network. This isn't a great description, but what do you want
  * from me?
@@ -20,7 +18,7 @@ Network::Network(NetworkParams &params)
 		, wnoise(params.wnoise) {
 	// Is this moral?
 	(*params.builder)(neurons,
-		bind(&Network::neuron_callback, this, placeholders::_1));
+		std::bind(&Network::neuron_callback, this, std::placeholders::_1));
 }
 
 /**
@@ -90,7 +88,7 @@ void Network::run(std::ostream &out) {
 			<< duration << '\t'
 			<< depol_sum << '\t'
 			<< active << '\t'
-			<< is_up << endl;
+			<< is_up << std::endl;
 
 		// Up/down transition
 		is_up = (depol_sum <= transition);

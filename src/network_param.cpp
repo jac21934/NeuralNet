@@ -2,15 +2,13 @@
 
 #include "network_param.h"
 
-using namespace std;
-
 /**
  * Creates a new NetworkParams object by parsing a configuration file
  *
  * @param filename The name of the configuration file
  * @param g The RNG to act as the source of randomness for all network purposes
  */
-NetworkParams::NetworkParams(const string &filename, RNG &g)
+NetworkParams::NetworkParams(const std::string &filename, RNG &g)
 		: g(g)
 		, size(0)
 		, avalanches(0)
@@ -27,20 +25,20 @@ NetworkParams::NetworkParams(const string &filename, RNG &g)
 		, builder()
 		, nnoise()
 		, wnoise() {
-	ifstream inFile(filename.c_str());
+	std::ifstream inFile(filename.c_str());
 
 	if (!inFile)
-		throw runtime_error("No file with name \"" + filename + "\"");
+		throw std::runtime_error("No file with name \"" + filename + "\"");
 
 	while (inFile)
 		parse_file(inFile);
 
 	inFile.close();
 
-	builder = make_shared<ConnectomeBuilder>(size, fire_threshold,
+	builder = std::make_shared<ConnectomeBuilder>(size, fire_threshold,
 		disfacilitation, inhibitory_fraction, output_fraction, exponent, g);
-	nnoise = make_shared<NeuronNoise>(nnoise_mean, nnoise_stdev, g);
-	wnoise = make_shared<WeightNoise>(wnoise_mean, wnoise_stdev, g);
+	nnoise = std::make_shared<NeuronNoise>(nnoise_mean, nnoise_stdev, g);
+	wnoise = std::make_shared<WeightNoise>(wnoise_mean, wnoise_stdev, g);
 }
 
 /**
@@ -52,11 +50,11 @@ NetworkParams::NetworkParams(const string &filename, RNG &g)
  * @param parameter The parameter being searched for
  * @return The value to which the parameter was set if present, NaN otherwise
  */
-static double get_parameter(string line, string parameter) {
+static double get_parameter(std::string line, std::string parameter) {
 	double ret = NAN;
 
 	if (line.substr(1, parameter.length() + 1) == parameter + ":")
-		ret = atof(line.substr(parameter.length() + 2).c_str());
+		ret = std::atof(line.substr(parameter.length() + 2).c_str());
 
 	return ret;
 }
@@ -67,39 +65,40 @@ static double get_parameter(string line, string parameter) {
  * @param inFile File from which configuration values will be read
  * @todo A more elegant parser would be nice
  */
-void NetworkParams::parse_file(ifstream &inFile) {
-	string line;
-	getline(inFile, line);
+void NetworkParams::parse_file(std::ifstream &inFile) {
+	std::string line;
+	std::getline(inFile, line);
 
 	if(line[0] != '#')
 		return;
 
 	double value;
-	if (!isnan(value = get_parameter(line, "NET_SIZE"))) {
+	if (!std::isnan(value = get_parameter(line, "NET_SIZE"))) {
 		size = value;
-	} else if (!isnan(value = get_parameter(line, "FIRE_THRESHOLD"))) {
+	} else if (!std::isnan(value = get_parameter(line, "FIRE_THRESHOLD"))) {
 		fire_threshold = value;
-	} else if (!isnan(value = get_parameter(line, "DISFACILITATION"))) {
+	} else if (!std::isnan(value = get_parameter(line, "DISFACILITATION"))) {
 		disfacilitation = value;
-	} else if (!isnan(value = get_parameter(line, "TRANSITION_THRESHOLD"))) {
+	} else if (
+			!std::isnan(value = get_parameter(line, "TRANSITION_THRESHOLD"))) {
 		transition = value;
-	} else if (!isnan(value = get_parameter(line, "AVALANCHES"))) {
+	} else if (!std::isnan(value = get_parameter(line, "AVALANCHES"))) {
 		avalanches = value;
-	} else if (!isnan(value = get_parameter(line, "NEURON_NOISE_MEAN"))) {
+	} else if (!std::isnan(value = get_parameter(line, "NEURON_NOISE_MEAN"))) {
 		nnoise_mean = value;
-	} else if (!isnan(value = get_parameter(line, "NEURON_NOISE_STDEV"))) {
+	} else if (!std::isnan(value = get_parameter(line, "NEURON_NOISE_STDEV"))) {
 		nnoise_stdev = value;
-	} else if (!isnan(value = get_parameter(line, "WEIGHT_NOISE_MEAN"))) {
+	} else if (!std::isnan(value = get_parameter(line, "WEIGHT_NOISE_MEAN"))) {
 		wnoise_mean = value;
-	} else if (!isnan(value = get_parameter(line, "WEIGHT_NOISE_STDEV"))) {
+	} else if (!std::isnan(value = get_parameter(line, "WEIGHT_NOISE_STDEV"))) {
 		wnoise_stdev = value;
-	} else if (!isnan(value = get_parameter(line, "EXPONENT"))) {
+	} else if (!std::isnan(value = get_parameter(line, "EXPONENT"))) {
 		exponent = value;
-	} else if (!isnan(value = get_parameter(line, "INHIBITORY"))) {
+	} else if (!std::isnan(value = get_parameter(line, "INHIBITORY"))) {
 		inhibitory_fraction = value;
-	} else if (!isnan(value = get_parameter(line, "OUTPUT"))) {
+	} else if (!std::isnan(value = get_parameter(line, "OUTPUT"))) {
 		output_fraction = value;
 	} else {
-		throw runtime_error("Unrecognized option: \"" + line + "\"");
+		throw std::runtime_error("Unrecognized option: \"" + line + "\"");
 	}
 }

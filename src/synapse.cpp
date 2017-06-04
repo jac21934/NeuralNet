@@ -3,8 +3,6 @@
 #include "synapse.h"
 #include "neuron.h"
 
-using namespace std;
-
 /**
  * Creates a new synapse with the given strength between the given neurons. Will
  * increase the postsynaptic neuron's in_degree and the presynaptic neuron's
@@ -22,7 +20,7 @@ Synapse::Synapse(Neuron &from, Neuron &to, double initial_strength)
 		, accumulated_charge(0) {
 
 	if (initial_strength < MIN_RES)
-		throw invalid_argument("Initial strength too low");
+		throw std::invalid_argument("Initial strength too low");
 
 	to.inc_in_degree();
 }

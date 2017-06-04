@@ -3,9 +3,7 @@
 
 #include "neuron.h"
 
-using namespace std;
-
-atomic_int Neuron::unused_id(0);
+std::atomic_int Neuron::unused_id(0);
 
 /**
  * Creates neuron.
@@ -115,7 +113,7 @@ void Neuron::strengthen_connection(double delta, Neuron &target) {
 		if (synapses.at(target.get_id()).increase_strength(delta)) {
 			synapses.erase(target.get_id());
 		}
-	} catch (out_of_range e) {
+	} catch (std::out_of_range e) {
 		synapses.insert(std::make_pair(target.get_id(),
 			Synapse(*this, target, delta)));
 	}
@@ -259,8 +257,8 @@ double Neuron::increase_potential(double delta) {
 		if (potential > threshold && !is_out)
 			callback(*this);
 
-		if (!isfinite(potential))
-			throw runtime_error("Nonfinite potential");
+		if (!std::isfinite(potential))
+			throw std::runtime_error("Nonfinite potential");
 
 		return depol;
 	}

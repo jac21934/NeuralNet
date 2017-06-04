@@ -2,8 +2,6 @@
 
 #include "connectome.h"
 
-using namespace std;
-
 /**
  * Creates a new ConnectomeBuilder. This object will create neural networks with
  * the given parameters. Initial weights will be uniformly distributed
@@ -57,7 +55,7 @@ ConnectomeBuilder::ConnectomeBuilder(
  *  more than once...
  */
 void ConnectomeBuilder::operator()(
-		vector<Neuron> &neurons,
+		std::vector<Neuron> &neurons,
 		Neuron::ready_callback callback) {
 	neurons.clear();
 	/** The vector MUST NOT reallocate once we start adding vectors or a
@@ -84,7 +82,7 @@ void ConnectomeBuilder::operator()(
 			try {
 				it->get_connection_strength(neurons.at(receiver));
 				continue;
-			} catch (out_of_range e) {
+			} catch (std::out_of_range e) {
 				it->strengthen_connection(weight_dist(g), neurons.at(receiver));
 				remaining--;
 			}
