@@ -29,12 +29,12 @@ Neuron::Neuron(
 		, disfacilitation(disfacilitation)
 		, character(inhibitory ? -1 : 1)
 		, is_out(output)
-		, potential(initial_potential)
-		, potential_prev(initial_potential)
+		, next_potential(initial_potential)
+		, current_potential(initial_potential)
 		, depol(0)
 		, weight_sum(0)
-		, refractory(false)
-		, refractory_prev(false)
+		, next_refractory(false)
+		, current_refractory(false)
 		, active(false)
 		, in_degree(0)
 		, callback(ready_to_fire)
@@ -57,15 +57,15 @@ double Neuron::time_step(void) {
 	double out_sum = 0;
 
 	if (is_out) {
-		potential = 0;
-	} else if (refractory_prev) {
-		refractory = false;
-		potential = 0;
-	} else if (potential_prev > threshold) {
+		next_potential = 0;
+	} else if (current_refractory) {
+		next_refractory = false;
+		next_potential = 0;
+	} else if (current_potential > threshold) {
 		for (auto it = synapses.begin(); it != synapses.end(); it++)
-			out_sum += it->second.fire(potential_prev);
+			out_sum += it->second.fire(current_potential);
 
-		refractory = true;
+		next_refractory = true;
 		active = true;
 	}
 
@@ -79,8 +79,8 @@ double Neuron::time_step(void) {
  * @see Neuron::time_step()
  */
 void Neuron::reset(void) {
-	potential_prev = potential;
-	refractory_prev = refractory;
+	current_potential = next_potential;
+	current_refractory = next_refractory;
 }
 
 /**
@@ -168,7 +168,7 @@ double Neuron::get_connection_strength(Neuron &target) const {
  */
 void Neuron::go_up(double potential) {
 	if (active)
-		this->potential = potential;
+		this->next_potential = potential;
 
 	depol = 0;
 	active = false;
@@ -182,7 +182,7 @@ void Neuron::go_up(double potential) {
  */
 void Neuron::go_down() {
 	if (active)
-		potential -= disfacilitation * depol;
+		next_potential -= disfacilitation * depol;
 
 	depol = 0;
 	active = false;
@@ -250,14 +250,14 @@ bool Neuron::was_active(void) const {
  *  nonfinite
  */
 double Neuron::increase_potential(double delta) {
-	if (!refractory_prev) {
-		potential += delta;
+	if (!current_refractory) {
+		next_potential += delta;
 		depol += std::fabs(delta);
 
-		if (potential > threshold && !is_out)
+		if (next_potential > threshold && !is_out)
 			callback(*this);
 
-		if (!std::isfinite(potential))
+		if (!std::isfinite(next_potential))
 			throw std::runtime_error("Nonfinite potential");
 
 		return depol;

@@ -54,12 +54,12 @@ private:
 	const int character;
 	const bool is_out;
 
-	double potential;
-	double potential_prev;
+	double next_potential;
+	double current_potential;
 	double depol;
 	double weight_sum;
-	bool refractory;
-	bool refractory_prev;
+	bool next_refractory;
+	bool current_refractory;
 	bool active;
 
 	int in_degree;
