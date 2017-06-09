@@ -58,9 +58,9 @@ void ConnectomeBuilder::operator()(
 		std::vector<Neuron> &neurons,
 		Neuron::ready_callback callback) {
 	neurons.clear();
-	/** The vector MUST NOT reallocate once we start adding vectors or a
-	  * whole bunch of references are going to be invalidated
-	  */
+	/* The vector MUST NOT reallocate once we start adding vectors or a
+	 * whole bunch of references are going to be invalidated
+	 */
 	neurons.reserve(size);
 
 	for (int i = 0; i < size; i++) {

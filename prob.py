@@ -22,7 +22,7 @@ for file in file_list:
 		if raw == 0:
 			continue
 		try:
-			i = int(math.log10(raw) / binning)
+			i = int(round(math.log10(raw) / binning))
 		except ValueError:
 			raise ValueError("Error: file %s field %d line %s" % (file, field, line))
 		
