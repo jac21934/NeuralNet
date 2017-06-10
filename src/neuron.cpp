@@ -260,7 +260,7 @@ double Neuron::increase_potential(double delta) {
 		if (!std::isfinite(next_potential))
 			throw std::runtime_error("Nonfinite potential");
 
-		return depol;
+		return delta;
 	}
 
 	return 0;
