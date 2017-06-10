@@ -32,7 +32,7 @@ ConnectomeBuilder::ConnectomeBuilder(
 		, disfacilitation(disfacilitation)
 		, inhibit(inhibitory_fraction)
 		, output(output_fraction)
-		, weight_dist(0, 1)
+		, weight_dist(MIN_RES, 1)
 		, neuron_dist(0, size - 1)
 		, out_dist(std::min(2, size - 1), std::min(100, size - 1), exponent) {
 	; // Nothing to see here
