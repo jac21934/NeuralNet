@@ -5,7 +5,7 @@ TARGET		= net
 CXX			= g++
 RM			= rm -f
 
-CPPFLAGS	= -MD -Wall -Werror -Weffc++ -std=c++11
+CPPFLAGS	= -MD -Wall -Weffc++ -Werror -std=c++11
 CXXFLAGS	= -O3
 LDFLAGS		=
 LDLIBS		=
@@ -36,6 +36,6 @@ dl-support.o:
 clean:
 	$(RM) $(TARGET) $(OBJS) $(DEPS)
 
-.PHONY: all clean debug
+.PHONY: all clean debug condor
 
 -include $(DEPS)
