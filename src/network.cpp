@@ -33,7 +33,7 @@ void Network::run(std::ostream &out) {
 	for (int i = 0; i < avalanches; i++) {
 		int wait_time = 0;
 		double depol_sum = 0;
-		int duration = 0;
+		int duration;
 		while (depol_sum == 0) {
 			// Apply noise until we're ready to fire
 			for ( ; !ready_to_fire; wait_time++) {
@@ -45,7 +45,7 @@ void Network::run(std::ostream &out) {
 			}
 
 			// Avalanche time
-			for ( ; ready_to_fire; duration++) {
+			for (duration = 0; ready_to_fire; duration++) {
 				ready_to_fire = false;
 
 				// Reset all neuron to prepare for firings
