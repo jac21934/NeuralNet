@@ -1,7 +1,8 @@
 import sys
 import math
 
-binning = 1.0 / 30
+binning = 1.0 / 10
+avg_shift = (1.0 + 10 ** binning) / 2
 
 file_list = sys.argv[1:]
 field = 2
@@ -22,7 +23,7 @@ for file in file_list:
 		if raw == 0:
 			continue
 		try:
-			i = int(round(math.log10(raw) / binning))
+			i = int(math.floor(math.log10(raw) / binning))
 		except ValueError:
 			raise ValueError("Error: file %s field %d line %s" % (file, field, line))
 		
@@ -35,4 +36,8 @@ for file in file_list:
 	data.close()
 
 for i in hist:
-	print 10**(binning * i), float(hist[i]) / count
+	# The average value of this bin
+	x = 10**(binning * i) * avg_shift
+	# Adjust for variable bin widths
+	y = (float(hist[i]) / count) / binning / math.log(10) / x
+	print x, y
