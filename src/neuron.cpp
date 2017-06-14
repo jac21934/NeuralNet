@@ -58,14 +58,13 @@ double Neuron::time_step(void) {
 
 	if (is_out) {
 		next_potential = 0;
-	} else if (current_refractory) {
-		next_refractory = false;
-		next_potential = 0;
-	} else if (current_potential > threshold) {
+	} else if (is_refractory()) {
+		exit_refractory();
+	} else if (get_potential() > threshold) {
 		for (auto it = synapses.begin(); it != synapses.end(); it++)
-			out_sum += it->second.fire(current_potential);
+			out_sum += it->second.fire();
 
-		next_refractory = true;
+		enter_refractory();
 		active = true;
 	}
 
@@ -252,7 +251,7 @@ bool Neuron::was_active(void) const {
  *  nonfinite
  */
 double Neuron::increase_potential(double delta, bool record) {
-	if (!current_refractory) {
+	if (!is_refractory()) {
 		next_potential += delta;
 		if (record)
 			depol += std::fabs(delta);
@@ -274,7 +273,7 @@ double Neuron::increase_potential(double delta, bool record) {
  *
  * @return -1 if the neuron is inhibitory, 1 if exictatory
  */
-int Neuron::get_character(void) {
+int Neuron::get_character(void) const {
 	return character;
 }
 
@@ -290,4 +289,42 @@ void Neuron::renormalize_weights(void) {
 
 	for (auto it = synapses.begin(); it != synapses.end(); it++)
 		weight_sum += it->second.get_strength();
+}
+
+/**
+ * Is the Neuron currently in a refractory state?
+ *
+ * @return True if the Neuron is currently in a refractory state
+ */
+bool Neuron::is_refractory(void) const {
+	return current_refractory;
+}
+
+/**
+ * Gets the current potential of the neuron.
+ *
+ * @return The Neuron's potential
+ */
+double Neuron::get_potential(void) const {
+	return current_potential;
+}
+
+/**
+ * If this method is called, Neuron will be set up to enter a refractory state
+ * during the next time step. This method does not check whether or not the
+ * Neuron is already in a refractory state.
+ */
+void Neuron::enter_refractory(void) {
+	next_refractory = true;
+}
+
+/**
+ * If this method is called, Neuron will be set up to exit a refractory state
+ * during the next time step. This will also reset its potential. This
+ * method does not check whether or not the Neuron is already in a refractory
+ * state.
+ */
+void Neuron::exit_refractory(void) {
+	next_refractory = false;
+	next_potential = 0;
 }

@@ -25,23 +25,25 @@ public:
 		ready_callback ready_to_fire);
 
 	double increase_potential(double delta, bool record = false);
-	double time_step(void);
-	double hebbian(double rate = 1);
 	void strengthen_connection(double delta, Neuron &target);
 	void strengthen_all_connections(double delta);
-	double get_weight_sum(void) const;
-	double get_connection_strength(Neuron &target) const;
+	double hebbian(double rate = 1);
 	void go_up(double potential);
 	void go_down();
 
 	void prepare(void);
+	double time_step(void);
 
 	int get_in_degree(void) const;
 	int get_out_degree(void) const;
 	int get_id(void) const;
-	int get_character(void);
+	int get_character(void) const;
 	double get_threshold(void) const;
 	bool was_active(void) const;
+	bool is_refractory(void) const;
+	double get_potential(void) const;
+	double get_weight_sum(void) const;
+	double get_connection_strength(Neuron &target) const;
 private:
 	/**
 	 * A weighted connection between neurons. Keeps track of all charge which passes
@@ -53,7 +55,7 @@ private:
 		~Synapse(void);
 
 		void reset(void);
-		double fire(double potential);
+		double fire(void);
 		bool increase_strength(double delta);
 		double hebbian_increase(double rate);
 		double get_strength(void) const { return strength; }
@@ -90,6 +92,8 @@ private:
 	void renormalize_weights(void);
 	void inc_in_degree(void) { in_degree++; }
 	void dec_in_degree(void) { in_degree--; }
+	void enter_refractory(void);
+	void exit_refractory(void);
 };
 
 #endif /*NEURON_H*/

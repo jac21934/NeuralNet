@@ -47,15 +47,14 @@ void Neuron::Synapse::reset(void) {
  * Sends charge to postsynaptic Neuron. Amount by which the postsynaptic
  * Neuron's potential is increased is recorded.
  *
- * @param potential The potential of the Neuron generating this signal
  * @return Postsynaptic Neuron potential increase
  * @see Synapse::hebbian_increase()
  * @see Synapse::reset();
  */
-double Neuron::Synapse::fire(double potential) {
-	double sent = to.increase_potential(potential * from.get_out_degree()
-		* strength * from.get_character() / to.get_in_degree()
-		/ from.get_weight_sum(), true);
+double Neuron::Synapse::fire(void) {
+	double sent = to.increase_potential(from.get_potential()
+		* from.get_out_degree() * strength * from.get_character()
+		/ to.get_in_degree() / from.get_weight_sum(), true);
 
 	accumulated_charge += std::fabs(sent);
 	return sent;
