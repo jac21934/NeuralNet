@@ -8,6 +8,10 @@
 #include "noise.h"
 #include "network_param.h"
 
+/**
+ * Represents an actual network full of neurons. Orchestrates Neuron firings
+ * and collects and reports statistics.
+ */
 class Network {
 public:
 	Network(NetworkParams &params);

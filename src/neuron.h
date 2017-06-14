@@ -9,11 +9,9 @@
 #include "noise.h"
 
 /**
- * @brief A single neuron.
- * 
- * Keeps track of potential, outgoing connections to other neurons, and some
- * recent history. Fires when potential is reached. Handles details of Hebbian
- * plasticity.
+ * A single neuron. Keeps track of potential, outgoing connections to other
+ * neurons, and some recent history. Fires when potential is reached. Handles
+ * details of Hebbian plasticity.
  */
 class Neuron {
 public:

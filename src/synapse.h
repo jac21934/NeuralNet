@@ -6,8 +6,6 @@
 class Neuron;
 
 /**
- * @brief A connection between neurons
- *
  * A weighted connection between neurons. Keeps track of all charge which passes
  * through itself.
  */

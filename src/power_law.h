@@ -5,6 +5,10 @@
 #include <cmath>
 #include <random>
 
+/**
+ * Produces power law distributed integers in a given range with a given
+ * exponent.
+ */
 template <class IntType = int>
 class power_law_distribution {
 public:
@@ -29,6 +33,13 @@ private:
 	double normalization;
 };
 
+/**
+ * Creates a distribution with the desired range and exponent
+ *
+ * @param a The smallest number which can be returned by the distribution
+ * @param b The largest number which can be returned by the distribution
+ * @param exp The exponent of the distribution
+ */
 template <class IntType>
 power_law_distribution<IntType>::power_law_distribution(
 		result_type a,
@@ -43,6 +54,9 @@ power_law_distribution<IntType>::power_law_distribution(
 	}
 }
 
+/**
+ * @return a power law distributed integer between a and b inclusive
+ */
 template <class IntType>
 template <class URNG>
 typename power_law_distribution<IntType>::result_type

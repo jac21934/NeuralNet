@@ -53,6 +53,7 @@ void Network::run(std::ostream &out) {
 					it->reset();
 				}
 
+				// Fire if/when ready
 				for (auto it = neurons.begin(); it != neurons.end(); it++) {
 					depol_sum += std::fabs(it->time_step());
 				}
