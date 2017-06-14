@@ -251,7 +251,8 @@ bool Neuron::was_active(void) const {
  *  nonfinite
  */
 double Neuron::increase_potential(double delta, bool record) {
-	if (!is_refractory()) {
+	// Charge sent to refractory neurons or firing neurons doesn't count
+	if (!is_refractory() || current_potential > threshold) {
 		next_potential += delta;
 		if (record)
 			depol += std::fabs(delta);
