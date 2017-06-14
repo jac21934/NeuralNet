@@ -166,6 +166,11 @@ double Neuron::get_connection_strength(Neuron &target) const {
  * @param potential Potential to which the neuron will be set
  */
 void Neuron::go_up(double potential) {
+	if (is_refractory()) {
+		exit_refractory();
+		prepare();
+	}
+
 	if (active)
 		this->next_potential = potential;
 
@@ -180,6 +185,11 @@ void Neuron::go_up(double potential) {
  * @see Neuron::go_up(double);
  */
 void Neuron::go_down() {
+	if (is_refractory()) {
+		exit_refractory();
+		prepare();
+	}
+
 	if (active)
 		next_potential -= disfacilitation * depol;
 
