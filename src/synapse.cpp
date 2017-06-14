@@ -1,6 +1,5 @@
 #include <cmath>
 
-#include "synapse.h"
 #include "neuron.h"
 
 /**
@@ -13,7 +12,7 @@
  * @param initial_strength The initial strength of this connection
  * @throws 
  */
-Synapse::Synapse(Neuron &from, Neuron &to, double initial_strength)
+Neuron::Synapse::Synapse(Neuron &from, Neuron &to, double initial_strength)
 		: from(from)
 		, to(to)
 		, strength(initial_strength)
@@ -29,7 +28,7 @@ Synapse::Synapse(Neuron &from, Neuron &to, double initial_strength)
  * Destructor. Decrements presynaptic neuron's out_degree and postsynaptic
  * neuron's in_degree.
  */
-Synapse::~Synapse(void) {
+Neuron::Synapse::~Synapse(void) {
 	to.dec_in_degree();
 }
 
@@ -40,7 +39,7 @@ Synapse::~Synapse(void) {
  * @see Synapse::fire(double)
  * @see Synapse::hebbian_increase()
  */
-void Synapse::reset(void) {
+void Neuron::Synapse::reset(void) {
 	accumulated_charge = 0;
 }
 
@@ -53,7 +52,7 @@ void Synapse::reset(void) {
  * @see Synapse::hebbian_increase()
  * @see Synapse::reset();
  */
-double Synapse::fire(double potential) {
+double Neuron::Synapse::fire(double potential) {
 	double sent = to.increase_potential(potential * from.get_out_degree()
 		* strength * from.get_character() / to.get_in_degree()
 		/ from.get_weight_sum(), true);
@@ -68,7 +67,7 @@ double Synapse::fire(double potential) {
  * @param delta Amount by which to increase bond strength
  * @return True if the synapse needs to be pruned
  */
-bool Synapse::increase_strength(double delta) {
+bool Neuron::Synapse::increase_strength(double delta) {
 	strength += delta;
 
 	return strength < MIN_RES;
@@ -83,7 +82,7 @@ bool Synapse::increase_strength(double delta) {
  * @see Synapse::fire(double)
  * @see Synapse::reset(void)
  */
-double Synapse::hebbian_increase(double rate) {
+double Neuron::Synapse::hebbian_increase(double rate) {
 	double delta = rate * accumulated_charge / from.get_threshold();
 
 	increase_strength(delta);
