@@ -244,15 +244,18 @@ bool Neuron::was_active(void) const {
  * out degree 0.
  *
  * @param delta Amount by which to increase the potential. Can be negative.
+ * @param record Should this depolarization, if it actually takes hold, be
+ *  counted toward the total depolarization of this Neuron?
  * @return Amount by which the potential increases
  * @see Neuron::Neuron(bool, bool, double, double, double, ready_callback)
  * @throws A runtime_exception if the increase causes the potential to become
  *  nonfinite
  */
-double Neuron::increase_potential(double delta) {
+double Neuron::increase_potential(double delta, bool record) {
 	if (!current_refractory) {
 		next_potential += delta;
-		depol += std::fabs(delta);
+		if (record)
+			depol += std::fabs(delta);
 
 		if (next_potential > threshold && !is_out)
 			callback(*this);

@@ -28,7 +28,7 @@ public:
 		double disfacilitation, 
 		ready_callback ready_to_fire);
 
-	double increase_potential(double delta);
+	double increase_potential(double delta, bool record = false);
 	double time_step(void);
 	void reset(void);
 	double hebbian(double rate = 1);
