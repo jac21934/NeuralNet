@@ -26,7 +26,6 @@ public:
 
 	double increase_potential(double delta, bool record = false);
 	double time_step(void);
-	void reset(void);
 	double hebbian(double rate = 1);
 	void strengthen_connection(double delta, Neuron &target);
 	void strengthen_all_connections(double delta);
@@ -34,6 +33,8 @@ public:
 	double get_connection_strength(Neuron &target) const;
 	void go_up(double potential);
 	void go_down();
+
+	void prepare(void);
 
 	int get_in_degree(void) const;
 	int get_out_degree(void) const;

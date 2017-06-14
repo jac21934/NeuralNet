@@ -47,11 +47,11 @@ Neuron::Neuron(
  * refractory state exited on the next turn. Otherwise, neuron will fire if it
  * is above potential, transmitting charge to all neurons to which it is
  * currently attached, and causing neuron to go into refractory state. Output
- * neurons won't actually fire. All neurons in the network should be reset
+ * neurons won't actually fire. All neurons in the network should be prepared
  * before this is called.
  *
  * @return Total of all depolarizations of all postsynaptic neurons this step
- * @see Neuron::reset()
+ * @see Neuron::prepare()
  */
 double Neuron::time_step(void) {
 	double out_sum = 0;
@@ -78,7 +78,7 @@ double Neuron::time_step(void) {
  *
  * @see Neuron::time_step()
  */
-void Neuron::reset(void) {
+void Neuron::prepare(void) {
 	current_potential = next_potential;
 	current_refractory = next_refractory;
 }
