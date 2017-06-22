@@ -17,6 +17,7 @@ public:
 		int size,
 		double fire_threshold,
 		double disfacilitation,
+		double max_strength,
 		double inhibitory_fraction,
 		double output_fraction,
 		double exponent,
@@ -31,6 +32,7 @@ private:
 	int size;
 	double fire_threshold;
 	double disfacilitation;
+	double max_strength;
 
 	std::bernoulli_distribution inhibit;
 	std::bernoulli_distribution output;

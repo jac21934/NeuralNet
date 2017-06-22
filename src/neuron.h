@@ -22,6 +22,7 @@ public:
 		double initial_potential, 
 		double fire_threshold, 
 		double disfacilitation, 
+		double max_connection_strength,
 		ready_callback ready_to_fire);
 
 	double increase_potential(double delta, bool record = false);
@@ -51,7 +52,11 @@ private:
 	 */
 	class Synapse {
 	public:
-		Synapse(Neuron &from, Neuron &to, double initial_strength);
+		Synapse(
+			Neuron &from,
+			Neuron &to,
+			double initial_strength,
+			double max_strength);
 		~Synapse(void);
 
 		void reset(void);
@@ -62,6 +67,7 @@ private:
 	private:
 		Neuron &from;
 		Neuron &to;
+		const double max_strength;
 		double strength;
 
 		double accumulated_charge;
@@ -73,6 +79,7 @@ private:
 	const int id;
 	const double threshold;
 	const double disfacilitation;
+	const double max_conn_strength;
 	const int character;
 	const bool is_out;
 

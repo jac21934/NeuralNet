@@ -10,16 +10,27 @@
  * @param from Neuron which transmits charge along this synapse
  * @param to Neuron which receives charge sent down this synapse
  * @param initial_strength The initial strength of this connection
- * @throws 
+ * @param max_strength The maximum strength of this connection. Hebbian
+ *  plasticity rules respect this maximum
+ * @throws invalid_argument if initial strength is lower than the pruning
+ *  threshold
+ * @throws invalid_argument if initial strength is larger than the max strength
  */
-Neuron::Synapse::Synapse(Neuron &from, Neuron &to, double initial_strength)
+Neuron::Synapse::Synapse(
+		Neuron &from,
+		Neuron &to,
+		double initial_strength,
+		double max_strength)
 		: from(from)
 		, to(to)
+		, max_strength(max_strength)
 		, strength(initial_strength)
 		, accumulated_charge(0) {
 
 	if (initial_strength < MIN_RES)
 		throw std::invalid_argument("Initial strength too low");
+	if (initial_strength > max_strength)
+		throw std::invalid_argument("Initial strength larger than maximum");
 
 	to.inc_in_degree();
 }
@@ -82,7 +93,11 @@ bool Neuron::Synapse::increase_strength(double delta) {
  * @see Synapse::reset(void)
  */
 double Neuron::Synapse::hebbian_increase(double rate) {
-	double delta = rate * accumulated_charge / from.get_threshold();
+	double delta = std::min(rate * accumulated_charge / from.get_threshold(),
+		max_strength - strength);
+	if (delta < 0)
+		throw std::runtime_error(
+			"Plasticity rules trying to decrease synapse strength");
 
 	increase_strength(delta);
 	reset();

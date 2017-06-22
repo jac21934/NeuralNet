@@ -11,6 +11,8 @@
  *  this object
  * @param fire_threshold The firing threshold of each Neuron
  * @param disfacilitation The disfacilitation of each Neuron
+ * @param max_strength The maximum connection strength of each synapse in the
+ *  network
  * @param inhibitory_fraction The fraction of Neurons which will be inhibitory
  * @param output_fraction The fraction of Neurons which will not fire at
  *  threshold, acting as sinks for network activity
@@ -22,6 +24,7 @@ ConnectomeBuilder::ConnectomeBuilder(
 		int size,
 		double fire_threshold,
 		double disfacilitation,
+		double max_strength,
 		double inhibitory_fraction,
 		double output_fraction,
 		double exponent,
@@ -30,6 +33,7 @@ ConnectomeBuilder::ConnectomeBuilder(
 		, size(size)
 		, fire_threshold(fire_threshold)
 		, disfacilitation(disfacilitation)
+		, max_strength(max_strength)
 		, inhibit(inhibitory_fraction)
 		, output(output_fraction)
 		, weight_dist(MIN_RES, 1)
@@ -65,7 +69,7 @@ void ConnectomeBuilder::operator()(
 
 	for (int i = 0; i < size; i++) {
 		neurons.emplace_back(output(g), inhibit(g), 0.9 * fire_threshold,
-			fire_threshold, disfacilitation, callback);
+			fire_threshold, disfacilitation, max_strength, callback);
 	}
 
 	for (auto it = neurons.begin(); it != neurons.end(); it++) {

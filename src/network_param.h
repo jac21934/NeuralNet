@@ -27,6 +27,7 @@ private:
 	int avalanches;
 	double fire_threshold;
 	double disfacilitation;
+	double max_strength;
 	double inhibitory_fraction;
 	double output_fraction;
 	double exponent;

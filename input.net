@@ -7,6 +7,9 @@ What constitutes a neuron firing
 Controls neuron decrease in down state transition
 #DISFACILITATION: 0.02
 
+Maximum strength synapses can achieve
+#MAX_STRENGTH: 2.0
+
 When to transition into down/up states
 #TRANSITION_THRESHOLD: 110
 

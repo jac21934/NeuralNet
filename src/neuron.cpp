@@ -14,6 +14,8 @@ std::atomic_int Neuron::unused_id(0);
  * @param fire_threshold Threshold at which this neuron will fire
  * @param disfacilitation Controls the extent to which neuron potential is
  *  lowered in down state transitions
+ * @param max_connection_strength The maximum strength of this neuron's
+ *  outgoing connections
  * @param ready_to_fire Function to be called when when the neuron is ready to
  *  fire
  */
@@ -23,10 +25,12 @@ Neuron::Neuron(
 		double initial_potential,
 		double fire_threshold,
 		double disfacilitation,
+		double max_connection_strength,
 		ready_callback ready_to_fire)
 		: id(++unused_id)
 		, threshold(fire_threshold)
 		, disfacilitation(disfacilitation)
+		, max_conn_strength(max_connection_strength)
 		, character(inhibitory ? -1 : 1)
 		, is_out(output)
 		, next_potential(initial_potential)
@@ -114,7 +118,7 @@ void Neuron::strengthen_connection(double delta, Neuron &target) {
 		}
 	} catch (std::out_of_range e) {
 		synapses.insert(std::make_pair(target.get_id(),
-			Synapse(*this, target, delta)));
+			Synapse(*this, target, delta, max_conn_strength)));
 	}
 
 	renormalize_weights();
