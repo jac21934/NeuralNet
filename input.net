@@ -11,7 +11,7 @@ When to transition into down/up states
 #TRANSITION_THRESHOLD: 110
 
 Total number of data points
-#AVALANCHES: 25000
+#AVALANCHES: 50000
 
 How much should neurons be poked in a down state?
 #NEURON_NOISE_MEAN: 0.2

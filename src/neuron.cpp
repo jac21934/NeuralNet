@@ -56,7 +56,7 @@ Neuron::Neuron(
 double Neuron::time_step(void) {
 	double out_sum = 0;
 
-	if (is_out) {
+	if (is_out || get_out_degree() == 0) {
 		next_potential = 0;
 	} else if (is_refractory()) {
 		exit_refractory();
