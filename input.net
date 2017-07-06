@@ -17,7 +17,7 @@ Total number of data points
 #AVALANCHES: 50000
 
 How much should neurons be poked in a down state?
-#NEURON_NOISE_MEAN: 0.2
+#NEURON_NOISE_MEAN: 0.02
 #NEURON_NOISE_STDEV: 0
 
 How much should weights be poked between avalanches?

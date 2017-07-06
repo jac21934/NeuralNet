@@ -48,7 +48,7 @@ void Network::run(std::ostream &out) {
 			for (duration = 0; ready_to_fire; duration++) {
 				ready_to_fire = false;
 
-				// Prepare all neuron to prepare for firings
+				// Prepare all neurons for firings
 				for (auto it = neurons.begin(); it != neurons.end(); it++) {
 					it->prepare();
 				}
