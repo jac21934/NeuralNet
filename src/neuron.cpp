@@ -117,8 +117,8 @@ void Neuron::strengthen_connection(double delta, Neuron &target) {
 			synapses.erase(target.get_id());
 		}
 	} catch (std::out_of_range e) {
-		synapses.insert(std::make_pair(target.get_id(),
-			Synapse(*this, target, delta, max_conn_strength)));
+		synapses.emplace(target.get_id(),
+			Synapse(*this, target, delta, max_conn_strength));
 	}
 
 	renormalize_weights();

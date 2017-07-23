@@ -36,6 +36,23 @@ Neuron::Synapse::Synapse(
 }
 
 /**
+ * Copy constructor for Synapse. Needed to ensure that in_degrees are tabulated
+ * properly.
+ *
+ * @param that Reference to Synapse which we are copying
+ */
+Neuron::Synapse::Synapse(const Synapse &that)
+		: from(that.from)
+		, to(that.to)
+		, max_strength(that.max_strength)
+		, strength(that.strength)
+		, accumulated_charge(that.accumulated_charge) {
+
+	// Needed to offset destruction of older synapse
+	to.inc_in_degree();
+}
+
+/**
  * Destructor. Decrements presynaptic neuron's out_degree and postsynaptic
  * neuron's in_degree.
  */

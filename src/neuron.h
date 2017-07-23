@@ -47,8 +47,8 @@ public:
 	double get_connection_strength(Neuron &target) const;
 private:
 	/**
-	 * A weighted connection between neurons. Keeps track of all charge which passes
-	 * through itself.
+	 * A weighted connection between neurons. Keeps track of all charge which
+	 * passes through itself.
 	 */
 	class Synapse {
 	public:
@@ -57,6 +57,7 @@ private:
 			Neuron &to,
 			double initial_strength,
 			double max_strength);
+		Synapse(const Synapse &that);
 		~Synapse(void);
 
 		void reset(void);
@@ -65,6 +66,8 @@ private:
 		double hebbian_increase(double rate);
 		double get_strength(void) const { return strength; }
 	private:
+		// It is completely invalid to allow copy assignment operators here
+		Synapse& operator=(const Synapse &that);
 		Neuron &from;
 		Neuron &to;
 		const double max_strength;
