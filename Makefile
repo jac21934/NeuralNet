@@ -17,6 +17,8 @@ SRCS = $(addprefix $(SRCDIR), $(SRCFILES))
 OBJS = $(SRCS:.cpp=.o)
 DEPS = $(OBJS:.o=.d)
 
+LIBC_LOCATION := $(shell $(CXX) --print-file-name=libc.a)
+
 all: $(TARGET)
 
 condor: CXX = condor_compile g++
@@ -31,7 +33,7 @@ $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 dl-support.o:
-	$(AR) -x /lib64/libc.a dl-support.o
+	$(AR) -x $(LIBC_LOCATION) dl-support.o
 
 clean:
 	$(RM) $(TARGET) $(OBJS) $(DEPS)
