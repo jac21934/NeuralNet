@@ -1,5 +1,5 @@
 Number of neurons
-#NET_SIZE: 1000
+#NET_SIZE: 64000
 
 What constitutes a neuron firing
 #FIRE_THRESHOLD: 6
@@ -14,7 +14,7 @@ When to transition into down/up states
 #TRANSITION_THRESHOLD: 110
 
 Total number of data points
-#AVALANCHES: 50000
+#AVALANCHES: 100000
 
 How much should neurons be poked in a down state?
 #NEURON_NOISE_MEAN: 0.02
@@ -31,4 +31,4 @@ Fraction of neurons which will be inhibitory
 #INHIBITORY: 0.1
 
 Fraction of neurons which will be output neurons (won't send charge to other neurons in the network
-#OUTPUT: 0.1
+#OUTPUT: 0.0
