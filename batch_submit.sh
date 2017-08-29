@@ -1,7 +1,8 @@
 #!/bin/bash
 
 CLEANUP=true
-CONDOR_FILE="/home/alnwarr/net/doNet.cmd"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CONDOR_FILE="$DIR/doNet.cmd"
 
 for var in *; do
 	if [ -d "${var}" ]; then

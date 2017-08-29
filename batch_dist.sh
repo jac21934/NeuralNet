@@ -2,8 +2,10 @@
 
 CLEANUP=true
 
-DISTGEN="/home/bth8/Desktop/Code/Neural nets/net/prob.py"
-PLOTGEN="/home/bth8/Desktop/Code/Neural nets/net/plot.py"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+DISTGEN="$DIR/prob.py"
+PLOTGEN="$DIR/plot.py"
 
 for var in *; do
 	if [ -d "${var}" ]; then
