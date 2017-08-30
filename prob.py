@@ -2,13 +2,13 @@ import sys
 import math
 
 binning = 1.0 / 20
-avg_shift = (1.0 + 10 ** binning) / 2
 
 file_list = sys.argv[1:]
 field = 2
 
 def x(i):
-	return 10**(binning * i) * avg_shift
+	#return (i + 0.5) * binning
+	return 10**(binning * i) * (1.0 + 10 ** binning) / 2
 
 try:
 	field = int(sys.argv[1])
@@ -28,11 +28,15 @@ for file in file_list:
 		if raw == 0:
 			continue
 		try:
+			#i = int(math.floor(raw / binning))
 			i = int(math.floor(math.log10(raw) / binning))
 		except ValueError:
 			raise ValueError("Error: file %s field %d line %s" % (file, field, line))
 		
 		events = events + 1
+
+		#if line.split()[6] == "0":
+		#	continue
 
 		try:
 			run_hist[i] = run_hist[i] + 1
