@@ -1,0 +1,26 @@
+Number of neurons
+#NET_SIZE: 500
+
+What constitutes a neuron firing
+#FIRE_THRESHOLD: 10
+
+Controls neuron decrease in down state transition
+#INHIBITION: 0.017
+
+When to transition into down/up states
+#TRANSITION_THRESHOLD: 140
+
+Total number of simulation steps
+#MAX_TURNS: 100000
+
+How much should neurons be poked between avalanches?
+#NOISE: 0.2
+
+Attaches nodes so as to create a scale free network of given exponent
+#LAMBDA: 2
+
+Attaches nodes to one another at random
+;#RANDOMIZE
+
+Attaches nodes with uniform degree
+;#OUT_DEGREE: 10
