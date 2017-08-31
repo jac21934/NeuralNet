@@ -1,5 +1,7 @@
 #include <iostream>
+#include <ios>
 #include <functional>
+#include <iomanip>      // std::setprecision
 
 #include "network.h"
 
@@ -83,13 +85,14 @@ void Network::run(std::ostream &out) {
 		}
 
 		// Reporting
-		out << 1.0 * new_bond_number / neurons.size() / neurons.size() << '\t'
-			<< weight_sum << '\t'
-			<< wait_time << '\t'
-			<< duration << '\t'
-			<< depol_sum << '\t'
-			<< active << '\t'
-			<< is_up << std::endl;
+		out << std::setprecision(6);
+		out << std::setw(10) << 1.0 * new_bond_number / neurons.size() / neurons.size() << '\t'
+				<< std::setw(10) << weight_sum << '\t'
+				<< std::setw(10) << wait_time << '\t'
+				<< std::setw(10) << duration << '\t'
+				<< std::setw(10) << depol_sum << '\t'
+				<< std::setw(10) << active << '\t'
+				<< std::setw(1) << is_up << std::endl;
 
 		// Up/down transition
 		is_up = (depol_sum <= transition);
