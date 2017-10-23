@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <string>
+#include <vector>
 
 #include "network.h"
 #include "network_param.h"
@@ -14,8 +15,14 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	RNG rand(
-		std::chrono::high_resolution_clock::now().time_since_epoch().count());
+	// Build up some entropy for the RNG
+	std::random_device rd;
+	std::vector<unsigned int> entropy;
+	for (int i = 0; i < 624; i++) {
+		entropy.push_back(rd());
+	}
+	std::seed_seq seed(entropy.begin(), entropy.end());
+	RNG rand(seed);
 
 	NetworkParams params(filename, rand);
 
