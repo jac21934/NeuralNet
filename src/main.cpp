@@ -1,7 +1,6 @@
 #include <iostream>
-#include <chrono>
 #include <string>
-#include <vector>
+#include <algorithm>
 
 #include "network.h"
 #include "network_param.h"
@@ -17,11 +16,10 @@ int main(int argc, char **argv) {
 
 	// Build up some entropy for the RNG
 	std::random_device rd;
-	std::vector<unsigned int> entropy;
-	for (int i = 0; i < 624; i++) {
-		entropy.push_back(rd());
-	}
-	std::seed_seq seed(entropy.begin(), entropy.end());
+	RNG::result_type entropy[RNG::state_size];
+	std::generate(std::begin(entropy), std::end(entropy), std::ref(rd));
+	std::seed_seq seed(std::begin(entropy), std::end(entropy));
+
 	RNG rand(seed);
 
 	NetworkParams params(filename, rand);
