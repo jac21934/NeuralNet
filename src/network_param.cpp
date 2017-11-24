@@ -14,6 +14,7 @@ NetworkParams::NetworkParams(const std::string &filename, RNG &g)
 		, size(0)
 		, avalanches(0)
 		, max_firings(INT_MAX)
+		, refractory_period(1)
 		, fire_threshold(0)
 		, disfacilitation(0)
 		, max_strength(0)
@@ -39,8 +40,8 @@ NetworkParams::NetworkParams(const std::string &filename, RNG &g)
 	inFile.close();
 
 	builder = std::make_shared<ConnectomeBuilder>(size, max_firings,
-		fire_threshold, disfacilitation, max_strength, inhibitory_fraction,
-		output_fraction, exponent, g);
+		refractory_period, fire_threshold, disfacilitation, max_strength,
+		inhibitory_fraction, output_fraction, exponent, g);
 	nnoise = std::make_shared<NeuronNoise>(nnoise_mean, nnoise_stdev, g);
 	wnoise = std::make_shared<WeightNoise>(wnoise_mean, wnoise_stdev, g);
 }
@@ -106,6 +107,8 @@ void NetworkParams::parse_file(std::ifstream &inFile) {
 		max_strength = value;
 	} else if (!std::isnan(value = get_parameter(line, "MAX_FIRINGS"))) {
 		max_firings = value;
+	} else if (!std::isnan(value = get_parameter(line, "REF_PERIOD"))) {
+		refractory_period = value;
 	} else {
 		throw std::runtime_error("Unrecognized option: \"" + line + "\"");
 	}

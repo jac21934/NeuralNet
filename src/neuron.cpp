@@ -18,6 +18,8 @@ std::atomic_int Neuron::unused_id(0);
  *  outgoing connections
  * @param max_firings The maximum number of times this neuron is capable of
  *  firing over the course of a single avalanche
+ * @param refractory_period Number of time steps after firing during which a
+ *  neuron is unable to fire
  * @param ready_to_fire Function to be called when when the neuron is ready to
  *  fire
  */
@@ -29,6 +31,7 @@ Neuron::Neuron(
 		double disfacilitation,
 		double max_connection_strength,
 		int max_firings,
+		int refractory_period,
 		ready_callback ready_to_fire)
 		: id(++unused_id)
 		, threshold(fire_threshold)
@@ -37,12 +40,13 @@ Neuron::Neuron(
 		, character(inhibitory ? -1 : 1)
 		, max_firings(max_firings)
 		, is_out(output)
+		, ref_time(refractory_period)
 		, next_potential(initial_potential)
 		, current_potential(initial_potential)
 		, depol(0)
 		, weight_sum(0)
-		, next_refractory(false)
-		, current_refractory(false)
+		, next_refractory(0)
+		, current_refractory(0)
 		, active(false)
 		, fired(0)
 		, in_degree(0)
@@ -177,7 +181,7 @@ double Neuron::get_connection_strength(Neuron &target) const {
  */
 void Neuron::go_up(double potential) {
 	prepare();
-	if (is_refractory()) {
+	while (is_refractory()) {
 		exit_refractory();
 		prepare();
 	}
@@ -198,7 +202,7 @@ void Neuron::go_up(double potential) {
  */
 void Neuron::go_down() {
 	prepare();
-	if (is_refractory()) {
+	while (is_refractory()) {
 		exit_refractory();
 		prepare();
 	}
@@ -322,7 +326,7 @@ void Neuron::renormalize_weights(void) {
  * @return True if the Neuron is currently in a refractory state
  */
 bool Neuron::is_refractory(void) const {
-	return current_refractory;
+	return current_refractory > 0;
 }
 
 /**
@@ -340,7 +344,7 @@ double Neuron::get_potential(void) const {
  * Neuron is already in a refractory state.
  */
 void Neuron::enter_refractory(void) {
-	next_refractory = true;
+	next_refractory = ref_time;
 }
 
 /**
@@ -350,6 +354,6 @@ void Neuron::enter_refractory(void) {
  * state.
  */
 void Neuron::exit_refractory(void) {
-	next_refractory = false;
+	next_refractory--;
 	next_potential = 0;
 }

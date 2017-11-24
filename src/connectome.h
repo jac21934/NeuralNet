@@ -16,6 +16,7 @@ public:
 	ConnectomeBuilder(
 		int size,
 		int max_firings,
+		int refractory_period,
 		double fire_threshold,
 		double disfacilitation,
 		double max_strength,
@@ -32,6 +33,7 @@ private:
 	RNG &g;
 	int size;
 	int max_firings;
+	int ref_time;
 	double fire_threshold;
 	double disfacilitation;
 	double max_strength;

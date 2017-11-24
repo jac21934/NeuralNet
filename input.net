@@ -35,3 +35,6 @@ Fraction of neurons which will be output neurons (won't send charge to other neu
 
 Maximum number of times a neuron can fire over the course of a single avalanche
 #MAX_FIRINGS: 1e9
+
+Length in time steps of neuron refractory period
+#REF_PERIOD: 1

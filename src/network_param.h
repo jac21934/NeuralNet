@@ -26,6 +26,7 @@ private:
 	int size;
 	int avalanches;
 	int max_firings;
+	int refractory_period;
 	double fire_threshold;
 	double disfacilitation;
 	double max_strength;

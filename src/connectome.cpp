@@ -11,6 +11,8 @@
  *  this object
  * @param max_firings The maximum number of times each Neuron can fire within a
  *  single avalanche
+ * @param refractory_period The number of time steps each neuron must spend in a
+ *  refractory state after firing
  * @param fire_threshold The firing threshold of each Neuron
  * @param disfacilitation The disfacilitation of each Neuron
  * @param max_strength The maximum connection strength of each synapse in the
@@ -25,6 +27,7 @@
 ConnectomeBuilder::ConnectomeBuilder(
 		int size,
 		int max_firings,
+		int refractory_period,
 		double fire_threshold,
 		double disfacilitation,
 		double max_strength,
@@ -35,6 +38,7 @@ ConnectomeBuilder::ConnectomeBuilder(
 		: g(g)
 		, size(size)
 		, max_firings(max_firings)
+		, ref_time(refractory_period)
 		, fire_threshold(fire_threshold)
 		, disfacilitation(disfacilitation)
 		, max_strength(max_strength)
@@ -74,7 +78,7 @@ void ConnectomeBuilder::operator()(
 	for (int i = 0; i < size; i++) {
 		neurons.emplace_back(output(g), inhibit(g), 0.9 * fire_threshold,
 			fire_threshold, disfacilitation, max_strength, max_firings,
-			callback);
+			ref_time, callback);
 	}
 
 	for (auto it = neurons.begin(); it != neurons.end(); it++) {

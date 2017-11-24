@@ -24,6 +24,7 @@ public:
 		double disfacilitation, 
 		double max_connection_strength,
 		int max_firings,
+		int refractory_period,
 		ready_callback ready_to_fire);
 
 	double increase_potential(double delta, bool record = false);
@@ -87,13 +88,14 @@ private:
 	const int character;
 	const int max_firings;
 	const bool is_out;
+	const int ref_time;
 
 	double next_potential;
 	double current_potential;
 	double depol;
 	double weight_sum;
-	bool next_refractory;
-	bool current_refractory;
+	int next_refractory;
+	int current_refractory;
 	bool active;
 	int fired;
 
