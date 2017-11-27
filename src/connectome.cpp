@@ -9,6 +9,8 @@
  *
  * @param size The number of Neurons that will populate Networks created by
  *  this object
+ * @param max_firings The maximum number of times each Neuron can fire within a
+ *  single avalanche
  * @param fire_threshold The firing threshold of each Neuron
  * @param disfacilitation The disfacilitation of each Neuron
  * @param max_strength The maximum connection strength of each synapse in the
@@ -22,6 +24,7 @@
  */
 ConnectomeBuilder::ConnectomeBuilder(
 		int size,
+		int max_firings,
 		double fire_threshold,
 		double disfacilitation,
 		double max_strength,
@@ -31,6 +34,7 @@ ConnectomeBuilder::ConnectomeBuilder(
 		RNG &g)
 		: g(g)
 		, size(size)
+		, max_firings(max_firings)
 		, fire_threshold(fire_threshold)
 		, disfacilitation(disfacilitation)
 		, max_strength(max_strength)
@@ -69,7 +73,8 @@ void ConnectomeBuilder::operator()(
 
 	for (int i = 0; i < size; i++) {
 		neurons.emplace_back(output(g), inhibit(g), 0.9 * fire_threshold,
-			fire_threshold, disfacilitation, max_strength, callback);
+			fire_threshold, disfacilitation, max_strength, max_firings,
+			callback);
 	}
 
 	for (auto it = neurons.begin(); it != neurons.end(); it++) {

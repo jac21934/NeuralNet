@@ -16,6 +16,8 @@ std::atomic_int Neuron::unused_id(0);
  *  lowered in down state transitions
  * @param max_connection_strength The maximum strength of this neuron's
  *  outgoing connections
+ * @param max_firings The maximum number of times this neuron is capable of
+ *  firing over the course of a single avalanche
  * @param ready_to_fire Function to be called when when the neuron is ready to
  *  fire
  */
@@ -26,12 +28,14 @@ Neuron::Neuron(
 		double fire_threshold,
 		double disfacilitation,
 		double max_connection_strength,
+		int max_firings,
 		ready_callback ready_to_fire)
 		: id(++unused_id)
 		, threshold(fire_threshold)
 		, disfacilitation(disfacilitation)
 		, max_conn_strength(max_connection_strength)
 		, character(inhibitory ? -1 : 1)
+		, max_firings(max_firings)
 		, is_out(output)
 		, next_potential(initial_potential)
 		, current_potential(initial_potential)
@@ -40,6 +44,7 @@ Neuron::Neuron(
 		, next_refractory(false)
 		, current_refractory(false)
 		, active(false)
+		, fired(0)
 		, in_degree(0)
 		, callback(ready_to_fire)
 		, synapses() {
@@ -60,7 +65,7 @@ Neuron::Neuron(
 double Neuron::time_step(void) {
 	double out_sum = 0;
 
-	if (is_out || get_out_degree() == 0) {
+	if (is_out || get_out_degree() == 0 || fired > max_firings) {
 		next_potential = 0;
 	} else if (is_refractory()) {
 		exit_refractory();
@@ -70,6 +75,7 @@ double Neuron::time_step(void) {
 
 		enter_refractory();
 		active = true;
+		fired++;
 	}
 
 	return out_sum;
@@ -181,6 +187,7 @@ void Neuron::go_up(double potential) {
 
 	depol = 0;
 	active = false;
+	fired = 0;
 }
 
 /**
@@ -201,6 +208,7 @@ void Neuron::go_down() {
 
 	depol = 0;
 	active = false;
+	fired = 0;
 }
 
 /**

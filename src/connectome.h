@@ -15,6 +15,7 @@ class ConnectomeBuilder {
 public:
 	ConnectomeBuilder(
 		int size,
+		int max_firings,
 		double fire_threshold,
 		double disfacilitation,
 		double max_strength,
@@ -30,6 +31,7 @@ public:
 private:
 	RNG &g;
 	int size;
+	int max_firings;
 	double fire_threshold;
 	double disfacilitation;
 	double max_strength;

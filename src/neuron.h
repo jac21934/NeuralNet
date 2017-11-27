@@ -23,6 +23,7 @@ public:
 		double fire_threshold, 
 		double disfacilitation, 
 		double max_connection_strength,
+		int max_firings,
 		ready_callback ready_to_fire);
 
 	double increase_potential(double delta, bool record = false);
@@ -84,6 +85,7 @@ private:
 	const double disfacilitation;
 	const double max_conn_strength;
 	const int character;
+	const int max_firings;
 	const bool is_out;
 
 	double next_potential;
@@ -93,6 +95,7 @@ private:
 	bool next_refractory;
 	bool current_refractory;
 	bool active;
+	int fired;
 
 	int in_degree;
 
