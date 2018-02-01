@@ -11,16 +11,16 @@ for file in sys.argv[1:-1]:
 	
 	data = open(file, "r")
 	for line in data:
-		x, y, sigma = line.split()
+		x, y = line.split()
 		xs.append(float(x))
 		ys.append(float(y))
-		sigmas.append(float(sigma))
+		#sigmas.append(float(sigma))
 	data.close()
 
 	try:
-		plt.errorbar(xs, ys, yerr=sigmas, fmt="o", label=file.split('/')[-2])
+		plt.errorbar(xs, ys, fmt="o", label=file.split('/')[-2])
 	except IndexError:
-		plt.errorbar(xs, ys, yerr=sigmas, fmt="o")
+		plt.errorbar(xs, ys, fmt="o")
 
 plt.xscale("log")
 plt.yscale("log")

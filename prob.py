@@ -64,4 +64,4 @@ for i in stats:
 	except ZeroDivisionError:
 		# too few samples
 		continue
-	print x(i), mu, sigma
+	print x(i), mu#, sigma

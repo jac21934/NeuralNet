@@ -17,7 +17,7 @@ for var in *; do
 				pushd -- "${dir}"
 
 				if $CLEANUP; then
-					rm mean_psd
+					rm -f mean_psd
 				fi
 
 				if [[ ! -a mean_psd ]]; then
