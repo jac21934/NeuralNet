@@ -18,7 +18,7 @@ for var in *; do
 				pushd -- "${dir}"
 
 				if $CLEANUP; then
-					rm wait_time_dist duration_dist depol_dist active_dist
+					rm -f wait_time_dist duration_dist depol_dist active_dist
 				fi
 
 				if [[ ! -a wait_time_dist ]]; then
