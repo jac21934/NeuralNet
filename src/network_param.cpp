@@ -11,6 +11,8 @@
  */
 NetworkParams::NetworkParams(const std::string &filename, RNG &g)
 		: g(g)
+		, psd(false)
+		, delay(0)
 		, size(0)
 		, avalanches(0)
 		, max_firings(INT_MAX)
@@ -109,6 +111,10 @@ void NetworkParams::parse_file(std::ifstream &inFile) {
 		max_firings = value;
 	} else if (!std::isnan(value = get_parameter(line, "REF_PERIOD"))) {
 		refractory_period = value;
+	} else if (!std::isnan(value = get_parameter(line, "PSD"))) {
+		psd = (value != 0);
+	} else if (!std::isnan(value = get_parameter(line, "DELAY"))) {
+		delay = value;
 	} else {
 		throw std::runtime_error("Unrecognized option: \"" + line + "\"");
 	}

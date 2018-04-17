@@ -23,6 +23,8 @@ private:
 	void parse_file(std::ifstream &inFile);
 
 	RNG &g;
+	bool psd;
+	int delay;
 	int size;
 	int avalanches;
 	int max_firings;

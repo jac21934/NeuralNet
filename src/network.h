@@ -20,7 +20,9 @@ public:
 private:
 	std::vector<Neuron> neurons;
 	const int avalanches;
+	const int delay;
 	const double transition;
+	const bool psd;
 
 	bool ready_to_fire;
 

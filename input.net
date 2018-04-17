@@ -13,8 +13,8 @@ Maximum strength synapses can achieve
 When to transition into down/up states
 #TRANSITION_THRESHOLD: 110
 
-Total number of data points
-#AVALANCHES: 100000
+Total number of avalanches to simulate
+#AVALANCHES: 90000
 
 How much should neurons be poked in a down state?
 #NEURON_NOISE_MEAN: 0.02
@@ -30,7 +30,7 @@ Out degree distribution exponent
 Fraction of neurons which will be inhibitory
 #INHIBITORY: 0.1
 
-Fraction of neurons which will be output neurons (won't send charge to other neurons in the network
+Fraction of neurons which will be output neurons (won't send charge to other neurons in the network)
 #OUTPUT: 0.0
 
 Maximum number of times a neuron can fire over the course of a single avalanche
@@ -38,3 +38,9 @@ Maximum number of times a neuron can fire over the course of a single avalanche
 
 Length in time steps of neuron refractory period
 #REF_PERIOD: 1
+
+How long should we wait before outputting data in avalanches
+#DELAY: 40000
+
+Should we output individual time step data for computation of PSDs?
+#PSD: 1

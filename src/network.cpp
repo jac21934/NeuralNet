@@ -13,7 +13,9 @@
 Network::Network(NetworkParams &params)
 		: neurons()
 		, avalanches(params.avalanches)
+		, delay(params.delay)
 		, transition(params.transition)
+		, psd(params.psd)
 		, ready_to_fire(false)
 		, nnoise(params.nnoise)
 		, wnoise(params.wnoise) {
@@ -55,8 +57,15 @@ void Network::run(std::ostream &out) {
 				}
 
 				// Fire if/when ready
+				double eeg = 0;
 				for (auto it = neurons.begin(); it != neurons.end(); it++) {
-					depol_sum += std::fabs(it->time_step());
+					double depol = it->time_step();
+					depol_sum += std::fabs(depol);
+					eeg += depol;
+				}
+
+				if (psd && i >= delay && depol_sum != 0) {
+					out << eeg << '\t';
 				}
 			}
 		}
@@ -84,14 +93,18 @@ void Network::run(std::ostream &out) {
 		}
 
 		// Reporting
-		out << std::setprecision(6);
-		out << std::setw(10) << 1.0 * new_bond_number / neurons.size() / neurons.size() << '\t'
-				<< std::setw(10) << weight_sum << '\t'
-				<< std::setw(10) << wait_time << '\t'
-				<< std::setw(10) << duration << '\t'
-				<< std::setw(10) << depol_sum << '\t'
-				<< std::setw(10) << active << '\t'
-				<< std::setw(1) << is_up << std::endl;
+		if (i >= delay) {
+			if (psd)
+				out << '\n';
+			out << std::setprecision(6);
+			out << std::setw(10) << 1.0 * new_bond_number / neurons.size() / neurons.size() << '\t'
+					<< std::setw(10) << weight_sum << '\t'
+					<< std::setw(10) << wait_time << '\t'
+					<< std::setw(10) << duration << '\t'
+					<< std::setw(10) << depol_sum << '\t'
+					<< std::setw(10) << active << '\t'
+					<< std::setw(1) << is_up << std::endl;
+		}
 
 		// Up/down transition
 		is_up = (depol_sum <= transition);
