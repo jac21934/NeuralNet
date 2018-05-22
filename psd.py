@@ -28,25 +28,22 @@ for filename in file_list:
 	file = open(filename, "r")
 
 	eeg = []
+	k = True
 	for line in file:
-		# Ignore wait times
-		if line[0] == "#":
+		k = not k
+		if k:
 			continue
 
-		eeg.append(float(line))
+		eeg.extend([float(x) for x in line.split()])
 	file.close()
 
-	count = 0
-	for amp in np.fft.rfft(eeg):
-		freq = float(count) / len(eeg)
-		power = abs(amp) ** 2
-		count = count + 1
+	l = (len(eeg) / 10000) * 10000
+	f = np.fft.rfftfreq(l)
+	psd = np.abs(np.fft.rfft(eeg, l)) ** 2.0
 
-		if freq == 0:
-			continue
-
-		i = iofx(freq)
-		y = power / binwidth(i)
+	for n in range(1, len(psd)):
+		i = iofx(f[n])
+		y = psd[n] / binwidth(i)
 		try:
 			stats[i][0] = stats[i][0] + 1
 			stats[i][1] = stats[i][1] + y

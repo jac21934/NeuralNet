@@ -23,7 +23,12 @@ for file in file_list:
 	run_hist = {}
 	events = 0
 
+	k = False
 	for line in data:
+		k = not k
+		if k:
+			continue
+
 		raw = float(line.split()[field])
 		if raw == 0:
 			continue
@@ -56,12 +61,12 @@ for file in file_list:
 
 for i in stats:
 	mu = stats[i][1] / stats[i][0]
-	try:
+	"""try:
 		sigma = math.sqrt((stats[i][2] / stats[i][0] - mu**2) * stats[i][0] / (stats[i][0] - 1))
 	except ValueError:
 		# rounding error
 		continue
 	except ZeroDivisionError:
 		# too few samples
-		continue
+		continue"""
 	print x(i), mu#, sigma
