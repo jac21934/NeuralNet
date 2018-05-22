@@ -15,6 +15,7 @@ NetworkParams::NetworkParams(const std::string &filename, RNG &g)
 		, delay(0)
 		, size(0)
 		, avalanches(0)
+		, max_psd(INT_MAX)
 		, max_firings(INT_MAX)
 		, refractory_period(1)
 		, fire_threshold(0)
@@ -91,6 +92,8 @@ void NetworkParams::parse_file(std::ifstream &inFile) {
 		transition = value;
 	} else if (!std::isnan(value = get_parameter(line, "AVALANCHES"))) {
 		avalanches = value;
+	} else if (!std::isnan(value = get_parameter(line, "MAX_PSD"))) {
+		max_psd = value;
 	} else if (!std::isnan(value = get_parameter(line, "NEURON_NOISE_MEAN"))) {
 		nnoise_mean = value;
 	} else if (!std::isnan(value = get_parameter(line, "NEURON_NOISE_STDEV"))) {

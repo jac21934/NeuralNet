@@ -27,6 +27,7 @@ private:
 	int delay;
 	int size;
 	int avalanches;
+	int max_psd;
 	int max_firings;
 	int refractory_period;
 	double fire_threshold;

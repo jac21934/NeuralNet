@@ -13,6 +13,7 @@
 Network::Network(NetworkParams &params)
 		: neurons()
 		, avalanches(params.avalanches)
+		, max_psd(params.max_psd)
 		, delay(params.delay)
 		, transition(params.transition)
 		, psd(params.psd)
@@ -33,6 +34,7 @@ Network::Network(NetworkParams &params)
 void Network::run(std::ostream &out) {
 	bool is_up = false;
 	double last_depol_sum = 0;
+	int psd_count = 0;
 	for (int i = 0; i < avalanches; i++) {
 		int wait_time = 0;
 		double depol_sum = 0;
@@ -66,6 +68,10 @@ void Network::run(std::ostream &out) {
 
 				if (psd && i >= delay && depol_sum != 0) {
 					out << eeg << '\t';
+					if(++psd_count >= max_psd) {
+						i = avalanches;
+						break;
+					}
 				}
 			}
 		}
