@@ -6,9 +6,16 @@ binning = 1.0 / 20
 file_list = sys.argv[1:]
 field = 2
 
-def x(i):
+# First option for linear binning, second for logarithmic
+def xofi(i):
 	#return (i + 0.5) * binning
 	return 10**(binning * i) * (1.0 + 10 ** binning) / 2
+def iofx(x):
+	#return int(math.floor(x / binning))
+	return int(math.floor(math.log10(x) / binning))
+def binwidth(i):
+	#return binning
+	return binning * math.log(10) * xofi(i)
 
 try:
 	field = int(sys.argv[1])
@@ -33,15 +40,11 @@ for file in file_list:
 		if raw == 0:
 			continue
 		try:
-			#i = int(math.floor(raw / binning))
-			i = int(math.floor(math.log10(raw) / binning))
+			i = iofx(raw)
 		except ValueError:
 			raise ValueError("Error: file %s field %d line %s" % (file, field, line))
 		
 		events = events + 1
-
-		#if line.split()[6] == "0":
-		#	continue
 
 		try:
 			run_hist[i] = run_hist[i] + 1
@@ -51,7 +54,7 @@ for file in file_list:
 
 	for i in run_hist:
 		# y value for this datapoint, corrected for variable bin widths
-		y = (float(run_hist[i]) / events) / (binning * math.log(10) * x(i))
+		y = (float(run_hist[i]) / events) / binwidth(i)
 		try:
 			stats[i][0] = stats[i][0] + 1
 			stats[i][1] = stats[i][1] + y
@@ -69,4 +72,4 @@ for i in stats:
 	except ZeroDivisionError:
 		# too few samples
 		continue"""
-	print x(i), mu#, sigma
+	print xofi(i), mu#, sigma
