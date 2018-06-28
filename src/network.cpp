@@ -109,11 +109,12 @@ void Network::run(std::ostream &out) {
 					<< std::setw(10) << duration << '\t'
 					<< std::setw(10) << depol_sum << '\t'
 					<< std::setw(10) << active << '\t'
-					<< std::setw(1) << is_up << std::endl;
+					<< std::setw(1) << is_up << '\t'
+					<< std::setw(10) << ratio_sum / connected_count << std::endl;
 		}
 
 		// Up/down transition
-		is_up = (depol_sum <= transition);
+		is_up = false;
 		for (auto it = neurons.begin(); it != neurons.end(); it++) {
 			if (is_up)
 				it->go_up(it->get_threshold() * (1 - depol_sum / transition));

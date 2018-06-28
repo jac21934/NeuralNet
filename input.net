@@ -5,7 +5,7 @@ What constitutes a neuron firing
 #FIRE_THRESHOLD: 6
 
 Controls neuron decrease in down state transition
-#DISFACILITATION: 0.02
+#DISFACILITATION: 0
 
 Maximum strength synapses can achieve
 #MAX_STRENGTH: 2.0
@@ -31,7 +31,7 @@ Out degree distribution exponent
 #EXPONENT: 2
 
 Fraction of neurons which will be inhibitory
-#INHIBITORY: 0.1
+#INHIBITORY: 0.07
 
 Fraction of neurons which will be output neurons (won't send charge to other neurons in the network)
 #OUTPUT: 0.0
@@ -43,7 +43,7 @@ Length in time steps of neuron refractory period
 #REF_PERIOD: 1
 
 How long should we wait before outputting data in avalanches
-#DELAY: 40000
+#DELAY: 0
 
 Should we output individual time step data for computation of PSDs?
 #PSD: 1
