@@ -41,6 +41,7 @@ Neuron::Neuron(
 		, max_firings(max_firings)
 		, is_out(output)
 		, ref_time(refractory_period)
+		, IsSuppressed(false)
 		, next_potential(initial_potential)
 		, current_potential(initial_potential)
 		, depol(0)
@@ -51,7 +52,7 @@ Neuron::Neuron(
 		, fired(0)
 		, in_degree(0)
 		, callback(ready_to_fire)
-		, synapses() {
+		, synapses()  {
 	; // Nothing else to see here
 }
 
@@ -71,9 +72,11 @@ double Neuron::time_step(void) {
 
 	if (is_out || get_out_degree() == 0 || fired > max_firings) {
 		next_potential = 0;
-	} else if (is_refractory()) {
+	}
+	else if (is_refractory()) {
 		exit_refractory();
-	} else if (get_potential() > threshold) {
+	}
+	else if (get_potential() > threshold) {
 		for (auto it = synapses.begin(); it != synapses.end(); it++)
 			out_sum += it->second.fire();
 
@@ -296,6 +299,9 @@ double Neuron::increase_potential(double delta, bool record) {
 
 	return 0;
 }
+void Neuron::suppress_potential(double suppressAmount) {
+		next_potential -= suppressAmount;
+}
 
 /**
  * Get the excitatory or inhibitory character of the neuron.
@@ -355,5 +361,10 @@ void Neuron::enter_refractory(void) {
  */
 void Neuron::exit_refractory(void) {
 	next_refractory--;
-	next_potential = 0;
+	next_potential =std::min(current_potential, 0.0); //if the neuron is being suppressed by an external field, should not be effected by refractory period.
 }
+
+void Neuron::set_IsSuppressed(bool suppressVal){
+		this->IsSuppressed = suppressVal;
+}
+		

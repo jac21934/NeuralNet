@@ -14,25 +14,28 @@
  */
 class Network {
 public:
-	Network(NetworkParams &params);
+		Network(NetworkParams &params);
 
-	void run(std::ostream &out);
+		void run(std::ostream &out);
 private:
-	std::vector<Neuron> neurons;
-	const int avalanches;
-	const int max_psd;
-	const int delay;
-	const double transition;
-	const bool psd;
+		std::vector<Neuron> neurons;
+		const int avalanches;
+		const int max_psd;
+		const int delay;
+		const double transition;
+		const bool psd;
+		const double suppress_chance;
+		const int suppress_type;
+		
+		bool ready_to_fire;
 
-	bool ready_to_fire;
+		std::shared_ptr<NeuronNoise> nnoise;
+		std::shared_ptr<WeightNoise> wnoise;
 
-	std::shared_ptr<NeuronNoise> nnoise;
-	std::shared_ptr<WeightNoise> wnoise;
 
-	int apply_noise_until_ready(void);
-	int apply_noise_until_ready(double last_depol);
-	void neuron_callback(Neuron &n);
+		int apply_noise_until_ready(void);
+		int apply_noise_until_ready(double last_depol);
+		void neuron_callback(Neuron &n);
 };
 
 #endif /*NETWORK_H*/

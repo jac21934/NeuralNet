@@ -31,7 +31,7 @@ Out degree distribution exponent
 #EXPONENT: 2
 
 Fraction of neurons which will be inhibitory
-#INHIBITORY: 0.07
+#INHIBITORY: 0.01
 
 Fraction of neurons which will be output neurons (won't send charge to other neurons in the network)
 #OUTPUT: 0.0
@@ -47,3 +47,10 @@ How long should we wait before outputting data in avalanches
 
 Should we output individual time step data for computation of PSDs?
 #PSD: 1
+
+How many neurons of the designated class shoud we suppress?
+#SUPPRESS_CHANCE: 1.0
+
+The type of neuron to suppress, inhibitory:-1, exhitory:1, all:0
+#SUPPRESS_TYPE: 0
+

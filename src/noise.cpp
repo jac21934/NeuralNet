@@ -12,8 +12,10 @@
  */
 NeuronNoise::NeuronNoise(double mean, double stdev, RNG &g)
 		: g(g)
-		, down_dist(mean, stdev) {
-	; // Nothing to see here
+		, down_dist(mean, stdev)
+		, uniformRealDist(0.0, 1.0)
+{
+		; // Nothing to see here
 }
 
 /**
@@ -24,10 +26,10 @@ NeuronNoise::NeuronNoise(double mean, double stdev, RNG &g)
  * @param range Determines the range of possible stimulations
  */
 void NeuronNoise::operator()(std::vector<Neuron> &neurons, double range) {
-	std::uniform_int_distribution<int> neuron_dist(0, neurons.size() - 1);
-	std::uniform_real_distribution<double> noise_dist(0, range);
+		std::uniform_int_distribution<int> neuron_dist(0, neurons.size() - 1);
+		std::uniform_real_distribution<double> noise_dist(0, range);
 
-	neurons.at(neuron_dist(g)).increase_potential(noise_dist(g));
+		neurons.at(neuron_dist(g)).increase_potential(noise_dist(g));
 }
 
 /**
@@ -39,11 +41,39 @@ void NeuronNoise::operator()(std::vector<Neuron> &neurons, double range) {
  * @see NeuronNoise::NeuronNoise(double, double, RNG)
  */
 void NeuronNoise::operator()(std::vector<Neuron> &neurons) {
-	std::uniform_int_distribution<int> neuron_dist(0, neurons.size() - 1);
+		std::uniform_int_distribution<int> neuron_dist(0, neurons.size() - 1);
 
-	neurons.at(neuron_dist(g)).increase_potential(down_dist(g));
+		neurons.at(neuron_dist(g)).increase_potential(down_dist(g));
 }
 
+void NeuronNoise::operator()(Neuron *neuron, double supressChance, double suppressAmount){
+		double chance = uniformRealDist(g);
+		if( chance < supressChance){
+				std::cout <<neuron->get_potential() << " "; 
+				neuron->suppress_potential(suppressAmount);
+				std::cout <<neuron->get_potential() << std::endl;
+		}
+}
+
+void NeuronNoise::PickSuppressedNeurons(std::vector<Neuron> &neurons, double suppressChance, int type){
+
+//		unsigned int count = 0;
+		for(unsigned int i = 0; i < neurons.size(); i++){
+				if(type == 0 || type == neurons[i].get_character()){
+						double chance = uniformRealDist(g);
+						if(chance < suppressChance){
+								neurons[i].set_IsSuppressed(true);
+//															count++;
+						}
+
+				}
+				else if(type != neurons[i].get_character() ){
+						continue;
+				}
+
+		}
+//		std::cout << "Suppressed " <<  float(count)/float(neurons.size()) << std::endl;
+}
 /**
  * Creates a WeightNoise object.
  *
@@ -51,11 +81,11 @@ void NeuronNoise::operator()(std::vector<Neuron> &neurons) {
  * @param mean The average amount of noise added to each connection
  * @param stdev The standard deviation of the noise added to each connection
  */
- WeightNoise::WeightNoise(double mean, double stdev, RNG &g)
+WeightNoise::WeightNoise(double mean, double stdev, RNG &g)
  		: g(g)
  		, noise_dist(mean, stdev) {
- 	; // Nothing to see here
- }
+		; // Nothing to see here
+}
 
 /**
  * Applies weight noise to the given list of neurons. Randomly strengthens or
@@ -67,4 +97,4 @@ void NeuronNoise::operator()(std::vector<Neuron> &neurons) {
  */
 /*WeightNoise::operator()(vector<Neurons> &neurons) {
 	TODO
-}*/
+	}*/
