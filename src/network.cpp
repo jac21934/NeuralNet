@@ -19,6 +19,7 @@ Network::Network(NetworkParams &params)
 		, psd(params.psd)
 		, suppress_chance(params.suppress_chance)
 		, suppress_type(params.suppress_type)
+		, suppress_delay(params.suppress_delay)
 		, ready_to_fire(false)
 		, nnoise(params.nnoise)
 		, wnoise(params.wnoise) {
@@ -41,12 +42,7 @@ void Network::run(std::ostream &out) {
 //		double suppressChance = 0.00001;
 		// double suppressAmount = 10.0;
 
-		
-		nnoise->PickSuppressedNeurons(neurons, suppress_chance, suppress_type);
-		
-		
-		
-		for (int i = 0; i < avalanches; i++) {
+		for (unsigned int i = 0; i < avalanches; i++) {
 				int wait_time = 0;
 				double depol_sum = 0;
 				int duration;
@@ -60,23 +56,24 @@ void Network::run(std::ostream &out) {
 								}
 						}
 
+						//Put control here
+
+						// if we're past the delay, we chose neurons of our designated
+						// type and roll the dice to see if they get suppressed.
+						if(suppress_delay == i){
+								nnoise->PickSuppressedNeurons(neurons, suppress_chance, suppress_type);
+						}
+
+						
 						// Avalanche time
 						for (duration = 0; ready_to_fire; duration++) {
 								ready_to_fire = false;
 
 								// Prepare all neurons for firings
 								for (auto it = neurons.begin(); it != neurons.end(); it++) {
-										// if(it->get_character() == -1){
-										// 		Neuron* neuron = &(*it);
-										// 		(*nnoise)(neuron, suppressChance, suppressAmount);
-										// }
 										it->prepare();
 								}
-
-								//Put control here?
-
-				
-				
+												
 								// Fire if/when ready
 								double eeg = 0;
 								for (auto it = neurons.begin(); it != neurons.end(); it++) {
@@ -128,14 +125,9 @@ void Network::run(std::ostream &out) {
 						if (psd)
 								out << '\n';
 						out << std::setprecision(6);
-						out << std::setw(10) << 1.0 * new_bond_number / neurons.size() / neurons.size() << '\t'
-								<< std::setw(10) << weight_sum << '\t'
-								<< std::setw(10) << wait_time << '\t'
-								<< std::setw(10) << duration << '\t'
-								<< std::setw(10) << depol_sum << '\t'
-								<< std::setw(10) << active << '\t'
-								<< std::setw(1) << is_up << '\t'
-								<< std::setw(10) << ratio_sum / connected_count << std::endl;
+						out << std::setw(10) << depol_sum << '\t'
+								<< std::setw(10) << duration << '\t' << std::endl;
+
 				}
 
 				// Up/down transition

@@ -31,7 +31,7 @@ Out degree distribution exponent
 #EXPONENT: 2
 
 Fraction of neurons which will be inhibitory
-#INHIBITORY: 0.01
+#INHIBITORY: 0.1
 
 Fraction of neurons which will be output neurons (won't send charge to other neurons in the network)
 #OUTPUT: 0.0
@@ -52,5 +52,7 @@ How many neurons of the designated class shoud we suppress?
 #SUPPRESS_CHANCE: 1.0
 
 The type of neuron to suppress, inhibitory:-1, exhitory:1, all:0
-#SUPPRESS_TYPE: 0
+#SUPPRESS_TYPE: -1
 
+The number of avalanches we wait before suppressing neurons
+#SUPPRESS_DELAY: 100

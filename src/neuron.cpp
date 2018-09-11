@@ -70,7 +70,11 @@ Neuron::Neuron(
 double Neuron::time_step(void) {
 	double out_sum = 0;
 
-	if (is_out || get_out_degree() == 0 || fired > max_firings) {
+	if (is_out
+			|| get_out_degree() == 0
+			|| fired > max_firings
+			|| IsSuppressed
+			) {
 		next_potential = 0;
 	}
 	else if (is_refractory()) {

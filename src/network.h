@@ -19,13 +19,17 @@ public:
 		void run(std::ostream &out);
 private:
 		std::vector<Neuron> neurons;
-		const int avalanches;
+		const unsigned int avalanches;
 		const int max_psd;
-		const int delay;
+		const unsigned int delay;
 		const double transition;
 		const bool psd;
+
+		//variables for neuron suppression
 		const double suppress_chance;
 		const int suppress_type;
+		const unsigned int suppress_delay;
+		
 		
 		bool ready_to_fire;
 

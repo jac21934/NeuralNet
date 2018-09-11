@@ -31,6 +31,7 @@ NetworkParams::NetworkParams(const std::string &filename, RNG &g)
 		, wnoise_stdev(0)
 		, suppress_chance(0.0)
 		, suppress_type(0)
+		, suppress_delay(0)
 		, builder()
 		, nnoise()
 		, wnoise() {
@@ -124,6 +125,8 @@ void NetworkParams::parse_file(std::ifstream &inFile) {
 				suppress_chance = value;
 		} else if (!std::isnan(value = get_parameter(line, "SUPPRESS_TYPE"))) {
 				suppress_type = value;
+		} else if (!std::isnan(value = get_parameter(line, "SUPPRESS_DELAY"))) {
+				suppress_delay = value;
 		} else {
 				throw std::runtime_error("Unrecognized option: \"" + line + "\"");
 		}

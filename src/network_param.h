@@ -24,9 +24,9 @@ private:
 
 		RNG &g;
 		bool psd;
-		int delay;
-		int size;
-		int avalanches;
+		unsigned int delay;
+		unsigned int size;
+		unsigned int avalanches;
 		int max_psd;
 		int max_firings;
 		int refractory_period;
@@ -43,6 +43,7 @@ private:
 		double wnoise_stdev;
 		double suppress_chance;
 		int suppress_type;
+		unsigned int suppress_delay;
 		
 		std::shared_ptr<ConnectomeBuilder> builder;
 		std::shared_ptr<NeuronNoise> nnoise;
