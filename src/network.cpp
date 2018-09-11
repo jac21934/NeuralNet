@@ -101,23 +101,10 @@ void Network::run(std::ostream &out) {
 						pre_lower_bond_number += it->get_out_degree();
 				}
 
-				// Homeostatic weight lowering and statistics collecting
-				double ratio_sum = 0;
-				int connected_count = 0;
-				int new_bond_number = 0;
-				double weight_sum = 0;
-				int active = 0;
+				// Homeostatic weight lowering
 				for (auto it = neurons.begin(); it != neurons.end(); it++) {
 						it->strengthen_all_connections(-total_weight_increase
 																					 / pre_lower_bond_number);
-						weight_sum += it->get_weight_sum();
-						if (it->get_weight_sum() > 0) {
-								connected_count++;
-								ratio_sum += (double) it->get_in_degree() / it->get_out_degree();
-						}
-						new_bond_number += it->get_out_degree();
-						if (it->was_active())
-								active++;
 				}
 
 				// Reporting

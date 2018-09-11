@@ -31,7 +31,7 @@ Out degree distribution exponent
 #EXPONENT: 2
 
 Fraction of neurons which will be inhibitory
-#INHIBITORY: 0.1
+#INHIBITORY: 0.3
 
 Fraction of neurons which will be output neurons (won't send charge to other neurons in the network)
 #OUTPUT: 0.0
