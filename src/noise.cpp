@@ -105,14 +105,7 @@ void NeuronNoise::PickHighConSuppressedNeurons(std::vector<Neuron> &neurons, int
 						}
 				}
 
-		}
-
-		for(unsigned int j = 0; j < maxVec.size(); j++){
-				std::cout << maxVec[j] << " " << maxdexVec[j] << std::endl;
-
-		}
-		
-		
+		}		
 
 }
 
