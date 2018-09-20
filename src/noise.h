@@ -22,6 +22,7 @@ public:
 		
 
 		void PickSuppressedNeurons(std::vector<Neuron> &neurons, double suppressChance, int type=-1);
+		void PickHighConSuppressedNeurons(std::vector<Neuron> & neurons, int numSuppress, int type = -1);
 		
 private:
 		RNG &g;

@@ -81,6 +81,42 @@ void NeuronNoise::PickSuppressedNeurons(std::vector<Neuron> &neurons, double sup
  * @param mean The average amount of noise added to each connection
  * @param stdev The standard deviation of the noise added to each connection
  */
+
+
+void NeuronNoise::PickHighConSuppressedNeurons(std::vector<Neuron> &neurons, int num, int type){
+
+		int numSuppress= num;
+
+		std::vector<int> maxVec(numSuppress, 0);
+		std::vector<unsigned int> maxdexVec(numSuppress, 0);
+
+		type = 0;
+		
+		for( unsigned int i = 0; i < neurons.size();i++){
+				if(type == 0 || type == neurons[i].get_character()){
+						for(unsigned int j = 0; j < maxVec.size(); j++){
+								if(neurons[i].get_out_degree() > maxVec[j]){
+										maxVec.insert(maxVec.begin() + j, neurons[i].get_out_degree());
+										maxVec.pop_back();
+										maxdexVec.insert(maxdexVec.begin() + j, i);
+										maxdexVec.pop_back();
+										break;
+								}
+						}
+				}
+
+		}
+
+		for(unsigned int j = 0; j < maxVec.size(); j++){
+				std::cout << maxVec[j] << " " << maxdexVec[j] << std::endl;
+
+		}
+		
+		
+
+}
+
+
 WeightNoise::WeightNoise(double mean, double stdev, RNG &g)
  		: g(g)
  		, noise_dist(mean, stdev) {

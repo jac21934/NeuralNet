@@ -58,10 +58,13 @@ void Network::run(std::ostream &out) {
 
 						//Put control here
 
+
+						
 						// if we're past the delay, we chose neurons of our designated
 						// type and roll the dice to see if they get suppressed.
 						if(suppress_delay == i){
-								nnoise->PickSuppressedNeurons(neurons, suppress_chance, suppress_type);
+//								nnoise->PickSuppressedNeurons(neurons, suppress_chance, suppress_type);
+								nnoise->PickHighConSuppressedNeurons(neurons, 10, 1);
 						}
 
 						
