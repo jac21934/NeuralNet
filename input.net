@@ -49,10 +49,10 @@ Should we output individual time step data for computation of PSDs?
 #PSD: 1
 
 How many neurons of the designated class shoud we suppress?
-#SUPPRESS_CHANCE: 1.0
+SUPPRESS_CHANCE: 1.0
 
 The type of neuron to suppress, inhibitory:-1, exhitory:1, all:0
-#SUPPRESS_TYPE: -1
+#SUPPRESS_TYPE: 1
 
 The number of avalanches we wait before suppressing neurons
 #SUPPRESS_DELAY: 100
